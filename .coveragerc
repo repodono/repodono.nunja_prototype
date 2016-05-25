@@ -1,0 +1,6 @@
+[report]
+include =
+    src/repodono/*
+omit =
+    */test*
+    */upgrades/*
