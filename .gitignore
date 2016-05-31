@@ -18,3 +18,7 @@ htmlcov/
 *.log
 output.xml
 *.swp
+dist/
+lib/
+node_modules/
+bower_components/

@@ -1,0 +1,9 @@
+{
+  "name": "repodono-nunja",
+  "dependencies": {
+    "nunjucks": ">2.0.0"
+  },
+  "devDependencies": {
+    "expect": "~0.3.0"
+  }
+}
