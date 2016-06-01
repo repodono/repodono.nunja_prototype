@@ -45,4 +45,5 @@ setup(
     extras_require={},
     entry_points="""
     """,
+    test_suite="repodono.nunja.tests.test_suite",
 )
