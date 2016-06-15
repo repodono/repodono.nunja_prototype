@@ -4,31 +4,40 @@ from os.path import dirname
 
 import repodono.nunja
 from repodono.nunja.engine import Engine
+from repodono.nunja.registry import Registry
+import repodono.nunja.testing
 
 
 class BaseTestCase(unittest.TestCase):
 
     def setUp(self):
-        self.engine = Engine()
-        path = join(dirname(repodono.nunja.__file__), 'mold', 'basic')
-        self.engine.register_mold(path)
+        self.registry = Registry(__name__)
+        self.registry.register_all(repodono.nunja.testing, subdir='mold')
+        self.engine = Engine(self.registry)
 
     def tearDown(self):
         pass
 
     def test_base_rendering(self):
-        result = self.engine.execute('basic', data={'value': 'Hello World!'})
+        result = self.engine.execute(
+            'repodono.nunja.testing.mold.basic',
+            data={'value': 'Hello World!'})
+
         self.assertEqual(
             result,
-            '<div data-nunja="basic">\n'
+            '<div data-nunja="repodono.nunja.testing.mold.basic">\n'
             '<span>Hello World!</span>\n'
             '</div>'
         )
+
         # Should work again, from cache.
-        result = self.engine.execute('basic', data={'value': 'Hello World!'})
+        result = self.engine.execute(
+            'repodono.nunja.testing.mold.basic',
+            data={'value': 'Hello World!'})
+
         self.assertEqual(
             result,
-            '<div data-nunja="basic">\n'
+            '<div data-nunja="repodono.nunja.testing.mold.basic">\n'
             '<span>Hello World!</span>\n'
             '</div>'
         )

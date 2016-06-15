@@ -3,6 +3,8 @@ from os.path import join
 
 from jinja2 import Template
 
+from repodono.nunja.registry import registry as default_registry
+
 
 class Renderer(object):
 
@@ -14,31 +16,17 @@ class Renderer(object):
         self.template = Template(template_str)
 
     def __call__(self, data):
+        # TODO i18n considerations, where the `_t` is a callable
+        # that provides gettext functionality.
         nunja_data = 'data-nunja="%s"' % self.name
         return self.template.render(_nunja_data_=nunja_data, **data)
 
 
 class Engine(object):
 
-    def __init__(self):
-        self.molds = {}
+    def __init__(self, registry=default_registry):
+        self.registry = registry
         self._renderer_cache = {}
-
-    def register_mold(self, path, name=None):
-        """
-        Register the path as a usable mold.
-
-        If name is not provided, default to the basename of the dir.
-        """
-
-        if name is None:
-            name = basename(path)
-
-        if name in self.molds:
-            raise KeyError(
-                'duplicate name `%s` cannot be registered as mold' % name)
-
-        self.molds[name] = path
 
     def execute(self, name, data):
         """
@@ -47,7 +35,7 @@ class Engine(object):
 
         # TODO cache invalidation
         if name not in self._renderer_cache:
-            path = self.molds[name]
+            path = self.registry.molds[name]
             with open(join(path, 'template.jinja')) as fd:
                 tmpl = fd.read()
                 self._renderer_cache[name] = renderer = Renderer(name, tmpl)
