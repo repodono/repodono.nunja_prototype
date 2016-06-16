@@ -6,7 +6,6 @@ from subprocess import call
 
 NODE = 'node'
 NPM = 'npm'
-BOWER = join('node_modules', '.bin', 'bower')
 
 
 def main():
@@ -19,7 +18,6 @@ def main():
 
     call([NPM, 'link', '--prefix=.'])
     call([NPM, 'install'])
-    call([BOWER, 'install'])
 
 
 if __name__ == '__main__':

@@ -10,15 +10,9 @@
     baseUrl: './',
     optimize: 'none',
     paths: {
-      'nunjucks': 'node_modules/nunjucks/browser/nunjucks',
-      // test dependencies
-      'expect': 'bower_components/expect/index',
-      // our application
-      'repodononunja-url': 'src/repodono/nunja/js'
+      'text': 'node_modules/requirejs-text/text',
     },
     shim: {
-      'expect': { exports: 'window.expect' },
-      'nunjucks': { exports: 'nunjucks' }
     },
     wrapShim: true
   };

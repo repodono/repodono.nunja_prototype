@@ -5,7 +5,7 @@ module.exports = function(config) {
     basePath: './',
 
     // frameworks to use
-    frameworks: ['mocha', 'chai'],
+    frameworks: ['mocha', 'requirejs', 'chai', 'expect', 'sinon'],
 
     // list of files / patterns to load in the browser
     files: [
@@ -14,9 +14,9 @@ module.exports = function(config) {
       * include initial framework (mocha and requirejs) with html5
       * shims/shams/polyfills
       */
+      'node_modules/requirejs/require.js',
       'node_modules/mocha/mocha.js',
       'node_modules/karma-mocha/lib/adapter.js',
-      'node_modules/requirejs/require.js',
       'node_modules/karma-requirejs/lib/adapter.js',
 
       'node_modules/nunjucks/browser/nunjucks.js',
@@ -24,15 +24,17 @@ module.exports = function(config) {
       /*
       * include requirejs configuration
       */
+      'src/repodono/nunja/js/config.js',
       'config.js',
       'tests/config.js',
 
       /* provide but not include */
 
+      {pattern: 'node_modules/requirejs-text/text.js', included: false},
+
       {pattern: 'tests/**/*.js', included: false},
-      {pattern: 'bower_components/**/*.js', included: false},
       {pattern: 'src/repodono/nunja/js/**/*', included: false},
-      {pattern: 'src/repodono/nunja/templates/**/*', included: false},
+      {pattern: 'src/repodono/nunja/testing/**/*', included: false},
     ],
 
     // list of files to exclude
@@ -66,11 +68,13 @@ module.exports = function(config) {
       'karma-chai',
       'karma-coverage',
       'karma-requirejs',
+      'karma-expect',
       'karma-sauce-launcher',
       'karma-chrome-launcher',
       'karma-phantomjs-launcher',
       'karma-junit-reporter',
-      'karma-spec-reporter'
+      'karma-spec-reporter',
+      'karma-sinon',
     ]
 
   });
