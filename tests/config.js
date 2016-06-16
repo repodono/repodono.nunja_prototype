@@ -1,7 +1,7 @@
 var tests = Object.keys(window.__karma__.files).filter(function (file) {
   'use strict';
 
-  return (/\-test\.js$/).test(file);
+  return (/test_.*\.js$/).test(file);
 });
 
 requirejs.config({
