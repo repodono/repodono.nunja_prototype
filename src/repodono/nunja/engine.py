@@ -2,8 +2,11 @@ from os.path import basename
 from os.path import join
 
 from jinja2 import Template
+from jinja2 import Environment
 
 from repodono.nunja.registry import registry as default_registry
+
+jinja = Environment(autoescape=True)
 
 
 class Renderer(object):
@@ -13,7 +16,7 @@ class Renderer(object):
         # node/javascript framework understands.  Build a system of sort
         # to achieve this.
         self.name = name
-        self.template = Template(template_str)
+        self.template = jinja.from_string(template_str)
 
     def __call__(self, data):
         # TODO i18n considerations, where the `_t` is a callable

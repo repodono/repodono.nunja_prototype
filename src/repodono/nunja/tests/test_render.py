@@ -41,3 +41,15 @@ class BaseTestCase(unittest.TestCase):
             '<span>Hello World!</span>\n'
             '</div>'
         )
+
+    def test_base_xss_handling(self):
+        result = self.engine.execute(
+            'repodono.nunja.testing.mold.basic',
+            data={'value': '<xss>'})
+
+        self.assertEqual(
+            result,
+            '<div data-nunja="repodono.nunja.testing.mold.basic">\n'
+            '<span>&lt;xss&gt;</span>\n'
+            '</div>'
+        )
