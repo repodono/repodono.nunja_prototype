@@ -1,5 +1,4 @@
-/* RequireJS configuration
-  */
+/* RequireJS configuration */
 
 /* global module:true */
 
@@ -9,13 +8,19 @@
     var requirejsOptions = {
         baseUrl: './',
         optimize: 'none',
+
         paths: {
-            'text': 'node_modules/requirejs-text/text',
+            // dependencies
+            'text': 'node_modules/require-text/text',
             'nunjucks': 'node_modules/nunjucks/browser/nunjucks',
-            'repodono.nunja.core': 'src/repodono/nunja/js/core',
+            // our application
+            'repodononunja-url': 'src/repodono/nunja/js'
         },
+
         shim: {
+            'nunjucks': { exports: 'nunjucks' }
         },
+
         wrapShim: true
     };
 
