@@ -5,9 +5,8 @@ define([
   'use strict';
 
   window.mocha.setup('bdd');
-  //$.fx.off = true;
 
-  describe('Test template', function() {
+  describe('Core functionality sanity checks', function() {
     beforeEach(function() {
       nunjucks.configure({ autoescape: true });
     });
@@ -15,9 +14,10 @@ define([
     afterEach(function() {
     });
 
-    it('Dummy test', function() {
-      var results = nunjucks.renderString(
-          'Hello {{ username }}', { username: 'User' });
+    it('String rendering', function() {
+      var results = nunjucks.renderString('Hello {{ username }}', {
+        username: 'User'
+      });
       expect(results).to.equal('Hello User');
     });
 
@@ -34,7 +34,7 @@ define([
       )
     });
 
-    it('Basic Template Rendering', function() {
+    it('Basic Template Rendering, XSS filtering', function() {
       var results = nunjucks.renderString(basic_template, {
         'value': '<xss>',
         '_nunja_data_': 'data-nunja="repodono.nunja.testing.mold.basic"'
@@ -42,6 +42,19 @@ define([
       expect(results).to.equal(
         '<div data-nunja="repodono.nunja.testing.mold.basic">\n' +
         '<span>&lt;xss&gt;</span>\n</div>\n'
+      )
+    });
+
+    it('Template compiling', function() {
+      var template = nunjucks.compile(basic_template);
+      template.compile()
+      var results = template.render({
+        'value': 'parameters',
+        '_nunja_data_': 'data-nunja="repodono.nunja.testing.mold.basic"'
+      });
+      expect(results).to.equal(
+        '<div data-nunja="repodono.nunja.testing.mold.basic">\n' +
+        '<span>parameters</span>\n</div>\n'
       )
     });
 
