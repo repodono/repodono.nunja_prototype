@@ -1,4 +1,6 @@
 import unittest
+
+from pkg_resources import EntryPoint
 from os.path import join
 from os.path import dirname
 
@@ -7,14 +9,24 @@ from repodono.nunja import exc
 from repodono.nunja.registry import Registry
 import repodono.nunja.testing
 
+basic_tmpl_str = """\
+<div {{ _nunja_data_ | safe }}>
+<span>{{ value }}</span>
+</div>
+"""
 
 class RegistryTestCase(unittest.TestCase):
 
     def setUp(self):
-        self.registry = Registry('repodono.nunja.testing.registry')
+        self.registry = Registry('repodono.nunja.testing.registry', {})
 
     def tearDown(self):
         pass
+
+    def register_entrypoint(self, raw):
+        # Emulate the default lookup and registration
+        ep = EntryPoint.parse(raw)
+        self.registry.entry_points[ep.name] = ep
 
     def test_registry_register_mold(self):
         target = join(
@@ -43,6 +55,37 @@ class RegistryTestCase(unittest.TestCase):
             'repodono.nunja.testing.mold/basic',
             'repodono.nunja.testing.mold/itemlist'
         ])
+
+        # Test that the lookup works.
+        path = self.registry.lookup_path('repodono.nunja.testing.mold/basic')
+        with open(join(path, 'template.jinja'), 'r') as fd:
+            contents = fd.read()
+        self.assertEqual(contents, basic_tmpl_str)
+
+    def test_lookup_from_entrypoint_recommended(self):
+        # Recommended syntax
+        self.register_entrypoint(
+            'repodono.nunja.testing.mold = repodono.nunja.testing:mold')
+        path = self.registry.lookup_path('repodono.nunja.testing.mold/basic')
+        with open(join(path, 'template.jinja'), 'r') as fd:
+            contents = fd.read()
+        self.assertEqual(contents, basic_tmpl_str)
+
+    def test_lookup_from_entrypoint_alternative(self):
+        # Working but alternative to the recommended naming
+        self.register_entrypoint(
+            'repodono.nunja.testmold = repodono.nunja.testing:mold')
+        path = self.registry.lookup_path('repodono.nunja.testmold/basic')
+        with open(join(path, 'template.jinja'), 'r') as fd:
+            contents = fd.read()
+        self.assertEqual(contents, basic_tmpl_str)
+
+    def test_bad_lookup_no_entrypoint(self):
+        with self.assertRaises(KeyError):
+            self.registry.lookup_path('repodono.nunja.testing.mold')
+
+        with self.assertRaises(KeyError):
+            self.registry.lookup_path('repodono.nunja.testing.mold/basic')
 
     # Test cases for ensuring no failures done by register_module
 

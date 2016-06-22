@@ -11,7 +11,7 @@ import repodono.nunja.testing
 class BaseTestCase(unittest.TestCase):
 
     def setUp(self):
-        self.registry = Registry(__name__)
+        self.registry = Registry(__name__, {})
         self.registry.register_module(repodono.nunja.testing, subdir='mold')
         self.engine = Engine(self.registry)
 

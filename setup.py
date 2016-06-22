@@ -39,7 +39,7 @@ setup(
     include_package_data=True,
     zip_safe=False,
     install_requires=[
-        'setuptools',
+        'setuptools>=11.3',
         'Jinja2',
     ],
     extras_require={},
