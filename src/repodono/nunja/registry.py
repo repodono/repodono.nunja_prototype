@@ -41,9 +41,9 @@ class Registry(object):
 
         self.molds[name] = path
 
-    def register_all(self, module, subdir=None):
+    def register_module(self, module, subdir=None):
         """
-        Register all subdirectories at the specified path.
+        Register all subdirectories at the path of the specified module.
 
         All errors will be logged.
 
@@ -67,6 +67,8 @@ class Registry(object):
             if subdir:
                 path = join(path, subdir)
 
+            prefix = '.'.join(m for m in (module.__name__, subdir) if m)
+
             if not isdir(path):
                 continue
 
@@ -75,8 +77,7 @@ class Registry(object):
                 if not isdir(target_path):
                     continue
 
-                name = '.'.join(
-                    m for m in (module.__name__, subdir, target) if m)
+                name = prefix + '/' + target
 
                 try:
                     self.register_mold(target_path, name=name)

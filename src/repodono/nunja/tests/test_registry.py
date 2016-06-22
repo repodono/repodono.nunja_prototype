@@ -31,29 +31,29 @@ class RegistryTestCase(unittest.TestCase):
         with self.assertRaises(exc.TemplateNotFoundError):
             self.registry.register_mold(target)
 
-    def test_registry_register_all(self):
-        self.registry.register_all(repodono.nunja.testing, subdir='mold')
+    def test_registry_register_module(self):
+        self.registry.register_module(repodono.nunja.testing, subdir='mold')
         self.assertEqual(list(self.registry.molds.keys()), [
-            'repodono.nunja.testing.mold.basic',
-            'repodono.nunja.testing.mold.itemlist'
+            'repodono.nunja.testing.mold/basic',
+            'repodono.nunja.testing.mold/itemlist'
         ])
         # duplicate registration should do nothing extra.
-        self.registry.register_all(repodono.nunja.testing, subdir='mold')
+        self.registry.register_module(repodono.nunja.testing, subdir='mold')
         self.assertEqual(list(self.registry.molds.keys()), [
-            'repodono.nunja.testing.mold.basic',
-            'repodono.nunja.testing.mold.itemlist'
+            'repodono.nunja.testing.mold/basic',
+            'repodono.nunja.testing.mold/itemlist'
         ])
 
-    # Test cases for ensuring no failures done by register_all
+    # Test cases for ensuring no failures done by register_module
 
-    def test_registry_register_all_not_module(self):
-        self.registry.register_all(None)
+    def test_registry_register_module_not_module(self):
+        self.registry.register_module(None)
         self.assertFalse(self.registry.molds)
 
-    def test_registry_register_all_subdir_missing(self):
-        self.registry.register_all(repodono.nunja.testing, subdir='notmold')
+    def test_registry_register_module_subdir_missing(self):
+        self.registry.register_module(repodono.nunja.testing, subdir='notmold')
         self.assertFalse(self.registry.molds)
 
-    def test_registry_register_all_baddir(self):
-        self.registry.register_all(repodono.nunja.testing, subdir='badmold')
+    def test_registry_register_module_baddir(self):
+        self.registry.register_module(repodono.nunja.testing, subdir='badmold')
         self.assertFalse(self.registry.molds)
