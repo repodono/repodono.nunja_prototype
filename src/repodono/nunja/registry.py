@@ -86,28 +86,33 @@ class Registry(object):
         ep = self.entry_points[prefix]
         module = __import__(ep.module_name, fromlist=['__name__'], level=0)
         # XXX not searching through all paths
-        # XXX not checking for REQ_TMPL_NAME
-        return join(dirname(module.__file__), ep.attrs[0], subdir)
+        path = join(dirname(module.__file__), ep.attrs[0], subdir)
+        self.verify_path(path)
+        return path
 
-    def register_mold(self, path, name=None):
-        """
-        Register the path as a usable mold.
-
-        If name is not provided, default to the basename of the dir.
-        """
-
-        if name is None:
-            name = basename(path)
-
-        if name in self.molds:
-            raise KeyError(
-                'duplicate name `%s` cannot be registered as mold' % name)
-
+    def verify_path(self, path):
         if not exists(join(path, REQ_TMPL_NAME)):
             raise TemplateNotFoundError(
                 'required template not found at `%s`' % path)
+        return True
 
-        self.molds[name] = path
+    def register_mold(self, path, mold_id=None):
+        """
+        Register the path as a usable mold.
+
+        If mold_id is not provided, default to the basename of the dir.
+        """
+
+        if mold_id is None:
+            mold_id = basename(path)
+
+        if mold_id in self.molds:
+            raise KeyError(
+                'duplicate mold_id `%s` cannot be registered as mold' %
+                mold_id)
+
+        self.verify_path(path)
+        self.molds[mold_id] = path
 
     def register_module(self, module, subdir=None, prefix=None):
         """
@@ -152,17 +157,17 @@ class Registry(object):
                 if not isdir(target_path):
                     continue
 
-                name = prefix + '/' + target
+                mold_id = prefix + '/' + target
 
                 try:
-                    self.register_mold(target_path, name=name)
+                    self.register_mold(target_path, mold_id=mold_id)
                 except TemplateNotFoundError:
                     logger.debug(
                         '%s missing required %s', target_path, REQ_TMPL_NAME)
                 except KeyError:
                     logger.warning(
                         '%s already registered to %s',
-                        name, self.registry_name)
+                        mold_id, self.registry_name)
                 else:
                     mc += 1
 

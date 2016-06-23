@@ -87,6 +87,19 @@ class RegistryTestCase(unittest.TestCase):
         with self.assertRaises(KeyError):
             self.registry.lookup_path('repodono.nunja.testing.mold/basic')
 
+    def test_bad_lookup_with_entrypoint(self):
+        self.register_entrypoint(
+            'repodono.nunja.testing.mold = repodono.nunja.testing:mold')
+
+        with self.assertRaises(KeyError):
+            self.registry.lookup_path('repodono.nunja.testing.mold')
+
+        self.assertIsNone(
+            self.registry.lookup_path('repodono.nunja.testing.mold', None))
+
+        with self.assertRaises(exc.TemplateNotFoundError):
+            self.registry.lookup_path('repodono.nunja.testing.mold/missing')
+
     # Test cases for ensuring no failures done by register_module
 
     def test_registry_register_module_not_module(self):
