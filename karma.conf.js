@@ -25,7 +25,7 @@ module.exports = function(config) {
             'src/repodono/nunja/js/config.js',
             'config.js',
             'tests/config.js',
-            'tmpconfig.js',
+            'nunja.generated.js',
 
             /* provide but not include */
 

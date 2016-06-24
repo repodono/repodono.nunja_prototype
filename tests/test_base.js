@@ -1,6 +1,6 @@
 define([
     'nunjucks',
-    'text!repodono.nunja.testing.mold.basic/template.jinja'
+    'text!repodono.nunja.testing.mold/basic/template.jinja'
 ], function(nunjucks, basic_template) {
     'use strict';
 
@@ -27,10 +27,10 @@ define([
                 // note this is manually injected here for testing reasons.
                 // XXX figure out how to compile this so _nunja_data_ is added
                 '_nunja_data_':
-                    'data-nunja="repodono.nunja.testing.mold.basic"'
+                    'data-nunja="repodono.nunja.testing.mold/basic"'
             });
             expect(results).to.equal(
-                '<div data-nunja="repodono.nunja.testing.mold.basic">\n' +
+                '<div data-nunja="repodono.nunja.testing.mold/basic">\n' +
                 '<span>Hello World!</span>\n</div>\n'
             )
         });
@@ -39,10 +39,10 @@ define([
             var results = nunjucks.renderString(basic_template, {
                 'value': '<xss>',
                 '_nunja_data_':
-                    'data-nunja="repodono.nunja.testing.mold.basic"'
+                    'data-nunja="repodono.nunja.testing.mold/basic"'
             });
             expect(results).to.equal(
-                '<div data-nunja="repodono.nunja.testing.mold.basic">\n' +
+                '<div data-nunja="repodono.nunja.testing.mold/basic">\n' +
                 '<span>&lt;xss&gt;</span>\n</div>\n'
             )
         });
@@ -53,10 +53,10 @@ define([
             var results = template.render({
                 'value': 'parameters',
                 '_nunja_data_':
-                    'data-nunja="repodono.nunja.testing.mold.basic"'
+                    'data-nunja="repodono.nunja.testing.mold/basic"'
             });
             expect(results).to.equal(
-                '<div data-nunja="repodono.nunja.testing.mold.basic">\n' +
+                '<div data-nunja="repodono.nunja.testing.mold/basic">\n' +
                 '<span>parameters</span>\n</div>\n'
             )
         });

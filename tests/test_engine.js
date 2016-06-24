@@ -18,15 +18,15 @@ define([
 
         it('Core engine test', function() {
             document.body.innerHTML = (
-                '<div data-nunja="repodono.nunja.testing.mold.basic"></div>');
+                '<div data-nunja="repodono.nunja.testing.mold/basic"></div>');
             this.engine.doOnLoad(document.body);
 
             this.clock.tick(500);
 
             var results = this.engine.render(
-                'repodono.nunja.testing.mold.basic', { value: 'Hello User' });
+                'repodono.nunja.testing.mold/basic', { value: 'Hello User' });
             expect(results).to.equal(
-                '<div data-nunja="repodono.nunja.testing.mold.basic">\n' +
+                '<div data-nunja="repodono.nunja.testing.mold/basic">\n' +
                 '<span>Hello User</span>\n</div>\n'
             )
         });
