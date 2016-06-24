@@ -23,7 +23,7 @@ class RegistryTestCase(unittest.TestCase):
     def tearDown(self):
         pass
 
-    def register_entrypoint(self, raw):
+    def emulate_register_entrypoint(self, raw):
         # Emulate the default lookup and registration
         ep = EntryPoint.parse(raw)
         self.registry.entry_points[ep.name] = ep
@@ -64,7 +64,7 @@ class RegistryTestCase(unittest.TestCase):
 
     def test_lookup_from_entrypoint_recommended(self):
         # Recommended syntax
-        self.register_entrypoint(
+        self.emulate_register_entrypoint(
             'repodono.nunja.testing.mold = repodono.nunja.testing:mold')
         path = self.registry.lookup_path('repodono.nunja.testing.mold/basic')
         with open(join(path, 'template.jinja'), 'r') as fd:
@@ -73,12 +73,19 @@ class RegistryTestCase(unittest.TestCase):
 
     def test_lookup_from_entrypoint_alternative(self):
         # Working but alternative to the recommended naming
-        self.register_entrypoint(
+        self.emulate_register_entrypoint(
             'repodono.nunja.testmold = repodono.nunja.testing:mold')
         path = self.registry.lookup_path('repodono.nunja.testmold/basic')
         with open(join(path, 'template.jinja'), 'r') as fd:
             contents = fd.read()
         self.assertEqual(contents, basic_tmpl_str)
+
+    def test_lookup_from_entrypoint_import_error(self):
+        # Working but alternative to the recommended naming
+        self.emulate_register_entrypoint(
+            'repodono.nunja.no.such.module = repodono.nunja.no:mold')
+        with self.assertRaises(ImportError):
+            self.registry.lookup_path('repodono.nunja.no.such.module/mold')
 
     def test_bad_lookup_no_entrypoint(self):
         with self.assertRaises(KeyError):
@@ -88,7 +95,7 @@ class RegistryTestCase(unittest.TestCase):
             self.registry.lookup_path('repodono.nunja.testing.mold/basic')
 
     def test_bad_lookup_with_entrypoint(self):
-        self.register_entrypoint(
+        self.emulate_register_entrypoint(
             'repodono.nunja.testing.mold = repodono.nunja.testing:mold')
 
         with self.assertRaises(KeyError):
@@ -99,6 +106,46 @@ class RegistryTestCase(unittest.TestCase):
 
         with self.assertRaises(exc.TemplateNotFoundError):
             self.registry.lookup_path('repodono.nunja.testing.mold/missing')
+
+    def test_register_all_entrypoints_fail(self):
+        self.emulate_register_entrypoint(
+            'repodono.nunja.no.such.module = repodono.nunja.testing.no:mold')
+        self.registry.init_entrypoints()
+        self.assertEqual(len(self.registry.molds), 0)
+
+    def test_register_all_entrypoints_fail_no_template(self):
+        self.emulate_register_entrypoint(
+            'repodono.nunja.testing.badmold = repodono.nunja.no:badmold')
+        self.registry.init_entrypoints()
+        self.assertEqual(len(self.registry.molds), 0)
+
+    def test_register_all_entrypoints_success(self):
+        self.emulate_register_entrypoint(
+            'repodono.nunja.testing.mold = repodono.nunja.testing:mold')
+        path1 = self.registry.lookup_path('repodono.nunja.testing.mold/basic')
+        self.registry.init_entrypoints()
+        path2 = self.registry.lookup_path('repodono.nunja.testing.mold/basic')
+        self.assertEqual(path1, path2)
+        path3 = self.registry.molds['repodono.nunja.testing.mold/basic']
+        self.assertEqual(path1, path3)
+
+        with open(join(path2, 'template.jinja'), 'r') as fd:
+            contents = fd.read()
+        self.assertEqual(contents, basic_tmpl_str)
+
+    def test_register_all_entrypoints_success_alt_name(self):
+        self.emulate_register_entrypoint(
+            'repodono.nunja.testmold = repodono.nunja.testing:mold')
+        path1 = self.registry.lookup_path('repodono.nunja.testmold/basic')
+        self.registry.init_entrypoints()
+        path2 = self.registry.lookup_path('repodono.nunja.testmold/basic')
+        self.assertEqual(path1, path2)
+        path3 = self.registry.molds['repodono.nunja.testmold/basic']
+        self.assertEqual(path1, path3)
+
+        with open(join(path2, 'template.jinja'), 'r') as fd:
+            contents = fd.read()
+        self.assertEqual(contents, basic_tmpl_str)
 
     # Test cases for ensuring no failures done by register_module
 

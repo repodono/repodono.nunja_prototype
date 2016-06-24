@@ -76,7 +76,7 @@ class Registry(object):
             return result
 
         try:
-            prefix, subdir = mold_id.split('/')
+            prefix, mold_dir = mold_id.split('/')
         except ValueError:
             if default is _marker:
                 raise KeyError
@@ -86,7 +86,7 @@ class Registry(object):
         ep = self.entry_points[prefix]
         module = __import__(ep.module_name, fromlist=['__name__'], level=0)
         # XXX not searching through all paths
-        path = join(dirname(module.__file__), ep.attrs[0], subdir)
+        path = join(dirname(module.__file__), ep.attrs[0], mold_dir)
         self.verify_path(path)
         return path
 
@@ -114,7 +114,7 @@ class Registry(object):
         self.verify_path(path)
         self.molds[mold_id] = path
 
-    def register_module(self, module, subdir=None, prefix=None):
+    def register_module(self, module, subdir=None, prefix=None, paths=None):
         """
         Register all subdirectories at the path of the specified module.
 
@@ -137,7 +137,9 @@ class Registry(object):
             logger.warning('%s is not a module', module)
             return False
 
-        paths = module.__path__
+        if paths is None:
+            paths = module.__path__
+
         pc = mc = 0
 
         if prefix is None:
@@ -175,6 +177,29 @@ class Registry(object):
             'Registered %d molds in %d subdir(s) named %s of module %s',
             mc, pc, subdir, module.__name__
         )
+
+    def init_entrypoints(self, entry_points=None):
+        """
+        Register all the local entry points.  By default entry points
+        recorded here will be loaded into the mold cache which will
+        speed up lookups but disables to dynamic loading of all mock_ids
+        that are prefixed with the entry point names.
+        """
+
+        if entry_points is None:
+            entry_points = self.entry_points
+
+        for ep in entry_points.values():
+            try:
+                module = __import__(
+                    ep.module_name, fromlist=['__name__'], level=0)
+            except ImportError:
+                logger.warning(
+                    'ImportError: %s; cannot register as mold', ep.module_name)
+                continue
+
+            subdir = ep.attrs[0]
+            self.register_module(module, subdir, ep.name)
 
 
 # Finally, make use of this via the pkg_resources
