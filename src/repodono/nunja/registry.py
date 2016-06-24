@@ -39,6 +39,7 @@ This will omit all entry points so that the default lookup or register
 methods will not make use of them.
 """
 
+import json
 from os import listdir
 from os.path import basename
 from os.path import dirname
@@ -200,6 +201,20 @@ class Registry(object):
 
             subdir = ep.attrs[0]
             self.register_module(module, subdir, ep.name)
+
+    def export_local_requirejs(self):
+        """
+        Export the registered molds as local requirejs configuration
+        """
+
+        return json.dumps({
+            # karma base url
+            'baseUrl': '/base',
+            # These will be in absolute paths
+            # karma.js configuration will need to mark them as provided
+            # but not directly included.
+            'paths': self.molds,
+        })
 
 
 # Finally, make use of this via the pkg_resources

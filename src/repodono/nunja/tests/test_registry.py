@@ -1,5 +1,6 @@
 import unittest
 
+import json
 from pkg_resources import EntryPoint
 from os.path import join
 from os.path import dirname
@@ -146,6 +147,15 @@ class RegistryTestCase(unittest.TestCase):
         with open(join(path2, 'template.jinja'), 'r') as fd:
             contents = fd.read()
         self.assertEqual(contents, basic_tmpl_str)
+
+    def test_export_local_requirejs(self):
+        # TODO contents are currently absolute paths, hope it's okay.
+        self.emulate_register_entrypoint(
+            'repodono.nunja.testmold = repodono.nunja.testing:mold')
+        self.registry.init_entrypoints()
+        result = json.loads(self.registry.export_local_requirejs())
+        p = self.registry.lookup_path('repodono.nunja.testmold/basic')
+        self.assertEqual(result['paths']['repodono.nunja.testmold/basic'], p)
 
     # Test cases for ensuring no failures done by register_module
 
