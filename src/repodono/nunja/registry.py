@@ -98,15 +98,17 @@ class Registry(object):
                 'mold_id %s resolves to entry point that failed to import')
 
         # XXX not searching through all paths
-        path = join(dirname(module.__file__), ep.attrs[0], mold_dir)
+        for path in module.__path__:
+            full_path = join(path, ep.attrs[0], mold_dir)
+            try:
+                self.verify_path(full_path)
+            except TemplateNotFoundError:
+                continue
+            else:
+                return full_path
 
-        try:
-            self.verify_path(path)
-        except TemplateNotFoundError:
-            return handle_default(
-                'mold_id %s does not have a valid template.jinja')
-
-        return path
+        return handle_default(
+            'mold_id %s does not lead to a valid template.jinja')
 
     def verify_path(self, path):
         if not exists(join(path, REQ_TMPL_NAME)):

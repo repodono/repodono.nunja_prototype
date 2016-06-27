@@ -4,6 +4,7 @@ import json
 from pkg_resources import EntryPoint
 from os.path import join
 from os.path import dirname
+import sys
 
 import repodono.nunja
 from repodono.nunja import exc
@@ -122,6 +123,14 @@ class RegistryTestCase(unittest.TestCase):
 
         self.assertEqual(self.registry.lookup_path(
             'repodono.nunja.testing.badmold/nomold', ''), '')
+
+    @unittest.skipIf(sys.version_info < (3, 3), "py3.3 __init__.py optional")
+    def test_lookup_with_entrypoint_dir_not_real_mod_py3_3(self):
+        self.emulate_register_entrypoint(
+            'repodono.nunja.testing.py3 = repodono.nunja.testing.py3mod:molds')
+
+        self.assertNotEqual(self.registry.lookup_path(
+            'repodono.nunja.testing.py3/mold', ''), '')
 
     def test_register_all_entrypoints_fail(self):
         self.emulate_register_entrypoint(
