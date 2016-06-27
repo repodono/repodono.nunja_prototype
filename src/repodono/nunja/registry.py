@@ -72,6 +72,14 @@ class Registry(object):
         Lookup the path of a mold identifier.
         """
 
+        def handle_default(debug_msg=None):
+            if debug_msg:
+                logger.debug('lookup_path:' + debug_msg, mold_id)
+            if default is _marker:
+                raise KeyError(
+                    'Failed to lookup mold_id %s to a path' % mold_id)
+            return default
+
         result = self.molds.get(mold_id)
         if result:
             return result
@@ -79,16 +87,25 @@ class Registry(object):
         try:
             prefix, mold_dir = mold_id.split('/')
         except ValueError:
-            if default is _marker:
-                raise KeyError
-            return default
+            return handle_default(
+                'mold_id %s not found and not in standard format')
 
-        # TODO check exceptions
         ep = self.entry_points[prefix]
-        module = __import__(ep.module_name, fromlist=['__name__'], level=0)
+        try:
+            module = __import__(ep.module_name, fromlist=['__name__'], level=0)
+        except ImportError:
+            return handle_default(
+                'mold_id %s resolves to entry point that failed to import')
+
         # XXX not searching through all paths
         path = join(dirname(module.__file__), ep.attrs[0], mold_dir)
-        self.verify_path(path)
+
+        try:
+            self.verify_path(path)
+        except TemplateNotFoundError:
+            return handle_default(
+                'mold_id %s does not have a valid template.jinja')
+
         return path
 
     def verify_path(self, path):

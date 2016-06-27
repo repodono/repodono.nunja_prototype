@@ -85,8 +85,10 @@ class RegistryTestCase(unittest.TestCase):
         # Working but alternative to the recommended naming
         self.emulate_register_entrypoint(
             'repodono.nunja.no.such.module = repodono.nunja.no:mold')
-        with self.assertRaises(ImportError):
+        with self.assertRaises(KeyError):
             self.registry.lookup_path('repodono.nunja.no.such.module/mold')
+        self.assertEqual(self.registry.lookup_path(
+            'repodono.nunja.no.such.module/mold', ''), '')
 
     def test_bad_lookup_no_entrypoint(self):
         with self.assertRaises(KeyError):
@@ -102,11 +104,24 @@ class RegistryTestCase(unittest.TestCase):
         with self.assertRaises(KeyError):
             self.registry.lookup_path('repodono.nunja.testing.mold')
 
-        self.assertIsNone(
-            self.registry.lookup_path('repodono.nunja.testing.mold', None))
+        self.assertEqual(
+            self.registry.lookup_path('repodono.nunja.testing.mold', ''), '')
 
-        with self.assertRaises(exc.TemplateNotFoundError):
+        with self.assertRaises(KeyError):
             self.registry.lookup_path('repodono.nunja.testing.mold/missing')
+
+        self.assertEqual(
+            self.registry.lookup_path('repodono.nunja.testing.mold', ''), '')
+
+    def test_bad_lookup_with_entrypoint_missing_template(self):
+        self.emulate_register_entrypoint(
+            'repodono.nunja.testing.badmold = repodono.nunja.testing:badmold')
+
+        with self.assertRaises(KeyError):
+            self.registry.lookup_path('repodono.nunja.testing.badmold/nomold')
+
+        self.assertEqual(self.registry.lookup_path(
+            'repodono.nunja.testing.badmold/nomold', ''), '')
 
     def test_register_all_entrypoints_fail(self):
         self.emulate_register_entrypoint(
@@ -114,9 +129,15 @@ class RegistryTestCase(unittest.TestCase):
         self.registry.init_entrypoints()
         self.assertEqual(len(self.registry.molds), 0)
 
-    def test_register_all_entrypoints_fail_no_template(self):
+    def test_register_all_entrypoints_fail_no_module(self):
         self.emulate_register_entrypoint(
             'repodono.nunja.testing.badmold = repodono.nunja.no:badmold')
+        self.registry.init_entrypoints()
+        self.assertEqual(len(self.registry.molds), 0)
+
+    def test_register_all_entrypoints_fail_no_template(self):
+        self.emulate_register_entrypoint(
+            'repodono.nunja.testing.badmold = repodono.nunja.testing:badmold')
         self.registry.init_entrypoints()
         self.assertEqual(len(self.registry.molds), 0)
 
