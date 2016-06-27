@@ -17,10 +17,11 @@ def main():
 
     # if node_version < (0, 11):
     #     call(NPM + ' link --prefix=.')
-    #     rmtree('lib', 'node_module')
 
     call([NPM, 'link', '--prefix=.'])
     call([NPM, 'install'])
+    # die.  The grandparent symlink in there will break setup.py
+    rmtree(join('.', 'lib', 'node_modules'))
 
 
 if __name__ == '__main__':
