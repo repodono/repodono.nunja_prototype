@@ -46,13 +46,13 @@ class RegistryTestCase(unittest.TestCase):
 
     def test_registry_register_module(self):
         self.registry.register_module(repodono.nunja.testing, subdir='mold')
-        self.assertEqual(list(self.registry.molds.keys()), [
+        self.assertEqual(sorted(self.registry.molds.keys()), [
             'repodono.nunja.testing.mold/basic',
             'repodono.nunja.testing.mold/itemlist'
         ])
         # duplicate registration should do nothing extra.
         self.registry.register_module(repodono.nunja.testing, subdir='mold')
-        self.assertEqual(list(self.registry.molds.keys()), [
+        self.assertEqual(sorted(self.registry.molds.keys()), [
             'repodono.nunja.testing.mold/basic',
             'repodono.nunja.testing.mold/itemlist'
         ])
