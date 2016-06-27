@@ -58,9 +58,10 @@
         "lcov-result-merger": "~1.0.2",
         "less": "~1.7.0",
         "mocha": "~2.2.4",
-        "phantomjs": "^1.9.18",
+        "phantomjs": "~2.1.1",
         "requirejs": "~2.1.17",
-        "requirejs-text": "~2.0.12"
+        "requirejs-text": "~2.0.12",
+        "sinon": "~1.17.4"
     },
     "license": "GPL"
 }
