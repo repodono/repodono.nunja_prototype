@@ -38,7 +38,7 @@ class Engine(object):
 
         # TODO cache invalidation
         if name not in self._renderer_cache:
-            path = self.registry.molds[name]
+            path = self.registry.lookup_path(name)
             with open(join(path, 'template.jinja')) as fd:
                 tmpl = fd.read()
                 self._renderer_cache[name] = renderer = Renderer(name, tmpl)
