@@ -44,6 +44,8 @@ setup(
     ],
     extras_require={},
     entry_points="""
+    [repodono.nunja.mold]
+    repodono.nunja.molds = repodono.nunja:molds
     """,
     test_suite="repodono.nunja.tests.test_suite",
 )

@@ -33,6 +33,7 @@ module.exports = function(config) {
             {pattern: 'node_modules/nunjucks/browser/nunjucks.js', included: false},
 
             {pattern: 'tests/**/*.js', included: false},
+            {pattern: 'src/repodono/nunja/molds/**', included: false},
             {pattern: 'src/repodono/nunja/js/*.js', included: false},
             {pattern: 'src/repodono/nunja/testing/**/*', included: false},
         ],
