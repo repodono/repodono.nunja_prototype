@@ -1,5 +1,7 @@
 define([
     'repodono.nunja.core',
+    // Template has to be preloaded first to emulate its availability.
+    'text!repodono.nunja.testing.mold/basic/template.jinja'
 ], function(core) {
     'use strict';
 
