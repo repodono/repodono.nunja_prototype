@@ -1,30 +1,39 @@
 define([
-    'nunjucks',
+    'repodono.nunja.core',
+    // Template has to be preloaded first to emulate its availability.
     'text!repodono.nunja.molds/table/template.jinja'
-], function(nunjucks, basic_template) {
+], function(core) {
     'use strict';
 
     window.mocha.setup('bdd');
 
-    describe('Core functionality sanity checks', function() {
+    describe('Basic repodono.nunja.molds/table rendering', function() {
         beforeEach(function() {
-            nunjucks.configure({ autoescape: true });
+            this.clock = sinon.useFakeTimers();
+            this.engine = core.engine;
+
+            // A barebone mock scaffold that should be enough to trigger
+            // the loading and compilation of the template into memory,
+            // if it's not there already.
+            document.body.innerHTML = (
+                '<div data-nunja="repodono.nunja.molds/table"></div>');
+            this.engine.doOnLoad(document.body);
+            this.clock.tick(500);
         });
 
         afterEach(function() {
+            this.clock.restore();
+            document.body.innerHTML = "";
         });
 
         it('Null rendering', function() {
-            var results = nunjucks.renderString(basic_template, {
-                '_nunja_data_':
-                    'data-nunja="repodono.nunja.molds/table"',
-
+            var results = this.engine.render('repodono.nunja.molds/table', {
                 'active_columns': [],
                 'column_map': {},
                 'data': [],
                 'css': {},
-
             });
+
             expect(results).to.equal(
                 '<div data-nunja="repodono.nunja.molds/table">\n' +
                 '<table class="">\n  <thead>\n' +
@@ -41,12 +50,7 @@ define([
         });
 
         it('Basic data rendering', function() {
-            var template = nunjucks.compile(basic_template);
-            template.compile()
-            var results = template.render({
-                '_nunja_data_':
-                    'data-nunja="repodono.nunja.molds/table"',
-
+            var results = this.engine.render('repodono.nunja.molds/table', {
                 'active_columns': ['id', 'name'],
                 'column_map': {
                     'id': 'Id',
