@@ -20,8 +20,12 @@ def main():
 
     call([NPM, 'link', '--prefix=.'])
     call([NPM, 'install'])
-    # die.  The grandparent symlink in there will break setup.py
-    rmtree(join('.', 'lib', 'node_modules'))
+    try:
+        # die.  The grandparent symlink in there will break setup.py
+        rmtree(join('.', 'lib', 'node_modules'))
+    except:
+        # Well, I guess it wasn't there, I don't care then.
+        pass
 
 
 if __name__ == '__main__':
