@@ -22,8 +22,10 @@ class DummyTableData(object):
         column_ids = [c[0] for c in self.columns]
 
         results = {
-            "active_columns": [id_ for id_, name in self.columns],
-            "column_map": dict(self.columns),
+            # filter out potential JSON-LD keywords from usable column_ids
+            "active_columns": [
+                id_ for id_, name in self.columns if id_[0] != '@'],
+            "column_map": {k: v for k, v in self.columns if k[0] != '@'},
             "data": [
                 dict(zip(column_ids, datum)) for datum in self.data
             ],

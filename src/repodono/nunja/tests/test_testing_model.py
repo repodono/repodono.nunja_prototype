@@ -59,4 +59,33 @@ class TestDummyTableData(unittest.TestCase):
             'css': {},
         })
 
+    def test_jsonld_id(self):
+        data = model.DummyTableData([
+            ['@id', ''],  # human readable can be empty
+            ['name', 'Name'],
+            ['desc', 'Description'],
+            ['size', 'Size'],
+        ], [
+            ['http://example.com/documents', 'documents', 'My Documents', '9'],
+            ['http://example.com/pictures', 'pictures', 'My Pictures', '43'],
+            ['http://example.com/videos', 'videos', 'My Videos', '0'],
+        ])
+        self.assertEqual(data.to_jsonable(), {
+            'active_columns': ['name', 'desc', 'size'],
+            'column_map': {
+                'name': 'Name',
+                'desc': 'Description',
+                'size': 'Size',
+            },
+            'data': [
+                {'size': '9', '@id': 'http://example.com/documents',
+                    'name': 'documents', 'desc': 'My Documents'},
+                {'size': '43', '@id': 'http://example.com/pictures',
+                    'name': 'pictures', 'desc': 'My Pictures'},
+                {'size': '0', '@id': 'http://example.com/videos',
+                    'name': 'videos', 'desc': 'My Videos'},
+            ],
+            'css': {},
+        })
+
 
