@@ -6,92 +6,7 @@ from os.path import dirname
 import repodono.nunja
 from repodono.nunja.engine import Engine
 from repodono.nunja.registry import registry
-import repodono.nunja.testing
-
-
-class DummyTableData(object):
-    """
-    This is a data provider that feeds stuff to the table mold.
-    """
-
-    def __init__(self, columns, data, css=None):
-        self.columns = columns
-        self.data = data
-        self.css = css or {}
-
-    def to_jsonable(self):
-        """
-        Convert to a dict that can be dumped into json.
-        """
-
-        column_ids = [c[0] for c in self.columns]
-
-        results = {
-            "active_columns": [id_ for id_, name in self.columns],
-            "column_map": dict(self.columns),
-            "data": [
-                dict(zip(column_ids, datum)) for datum in self.data
-            ],
-            "css": self.css,
-        }
-
-        return results
-
-
-class TestDummyTableData(unittest.TestCase):
-    """
-    These tests here serves as active documentation on what a given
-    endpoint will need to generate.
-    """
-
-    def test_basic(self):
-        data = DummyTableData([], [])
-        self.assertEqual(data.to_jsonable(), {
-            'active_columns': [],
-            'column_map': {},
-            'data': [],
-            'css': {},
-        })
-
-    def test_one(self):
-        data = DummyTableData([
-            ['ID', 'Identifier']
-        ], [
-            ['1'],
-            ['2'],
-        ])
-        self.assertEqual(data.to_jsonable(), {
-            'active_columns': ['ID'],
-            'column_map': {
-                'ID': 'Identifier',
-            },
-            'data': [
-                {'ID': '1'},
-                {'ID': '2'},
-            ],
-            'css': {},
-        })
-
-    def test_two(self):
-        data = DummyTableData([
-            ['id', 'Id'],
-            ['name', 'Given Name'],
-        ], [
-            ['1', 'John Smith'],
-            ['2', 'Eve Adams'],
-        ])
-        self.assertEqual(data.to_jsonable(), {
-            'active_columns': ['id', 'name'],
-            'column_map': {
-                'id': 'Id',
-                'name': 'Given Name',
-            },
-            'data': [
-                {'id': '1', 'name': 'John Smith'},
-                {'id': '2', 'name': 'Eve Adams'},
-            ],
-            'css': {},
-        })
+from repodono.nunja.testing import model
 
 
 class MoldTableTestCase(unittest.TestCase):
@@ -124,7 +39,7 @@ class MoldTableTestCase(unittest.TestCase):
         )
 
     def test_basic_table_contents(self):
-        data = DummyTableData([
+        data = model.DummyTableData([
             ['id', 'Id'],
             ['name', 'Given Name'],
         ], [
