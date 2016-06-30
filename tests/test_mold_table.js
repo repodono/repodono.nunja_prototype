@@ -36,7 +36,8 @@ define([
 
             expect(results).to.equal(
                 '<div data-nunja="repodono.nunja.molds/table">\n' +
-                '<table class="">\n  <thead>\n' +
+                '<table class="">\n' +
+                '  <thead>\n' +
                 '    <tr class="">\n' +
                 '    \n' +
                 '    </tr>\n' +
