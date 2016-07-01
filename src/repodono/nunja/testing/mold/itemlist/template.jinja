@@ -1,5 +1,5 @@
-<ul {{ _nunja_data_ }}>
+<ul id="{{ list_id }}" {{ _nunja_data_ | safe }}>
 {% for item in items %}
   <li>{{ item }}</li>
-{% endfor %}
+{%- endfor %}
 </ul>

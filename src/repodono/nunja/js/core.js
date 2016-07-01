@@ -27,17 +27,6 @@ define([
         return (context || document).querySelectorAll(selector);
     }
 
-    var loadTemplateAsync = function(moldId) {
-        // this ensures the templates are loaded and compiled and
-        // make it available via requirejs.
-        var target = 'text!' + moldId + '/' + REQ_TMPL_NAME;
-        require([target], function(templateString) {
-            var compiledId = moldId + COMPILED_SUFFIX;
-            define(compiledId, nunjucks.compile(templateString, env));
-            require([compiledId]);
-        });
-    };
-
     // TODO break this "module" up into the actual bits when this
     // matures a bit, i.e. move engine out of here if needed.
     var engine = {
@@ -48,21 +37,53 @@ define([
             return Array.prototype.slice.call(elements);
         },
 
-        loadElement: function(element, index, array) {
+        loadTemplateAsync: function(moldId) {
+            // this ensures the templates are loaded and compiled and
+            // make it available via requirejs.
+            var template_id = 'text!' + moldId + '/' + REQ_TMPL_NAME;
+            require([template_id], function(templateString) {
+                var compiledId = moldId + COMPILED_SUFFIX;
+                define(compiledId, nunjucks.compile(templateString, env));
+                require([compiledId]);
+            });
+        },
+
+        loadElement: function(element) {
+            /*
+            Process this element.  This also ensures the template is
+            available at some point.
+
+            Returns the moldID associated with this.
+            */
+
             var moldId = element.attributes.getNamedItem('data-nunja').value;
-            if (requirejs.defined(moldId + COMPILED_SUFFIX)) {
+            if (!requirejs.defined(moldId + COMPILED_SUFFIX)) {
                 // XXX we shouldn't repeatedly trigger multiple async
                 // calls with the same moldId - need a way to manage
                 // this here?
-                return;
+                engine.loadTemplateAsync(moldId);
             }
 
-            loadTemplateAsync(moldId);
+            return moldId
+        },
+
+        initElement: function(element, index, array) {
+            /*
+            element - The element we want.
+            index - passed in by forEach
+            array - passed in by forEach
+            */
+            var moldId = engine.loadElement(element);
+            var entry_point = moldId + '/index';
+            if (requirejs.defined(entry_point)) {
+                var main = require(entry_point);
+                main.init(element);
+            }
         },
 
         doOnLoad: function (content) {
-            var elements = this.scan(content);
-            elements.forEach(this.loadElement);
+            var elements = engine.scan(content);
+            elements.forEach(engine.initElement);
         },
 
         render: function (moldId, data) {
