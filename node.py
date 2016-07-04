@@ -1,4 +1,5 @@
 import os
+from os.path import isdir
 from os.path import join
 from shutil import rmtree
 
@@ -8,6 +9,13 @@ from subprocess import call
 NODE = 'node'
 NPM = 'npm'
 NODE_PATH = join('.', 'node_modules')
+
+
+def _check_clean_recursive_symlink(path):
+    # Used to delete any and all symlinks that links back to grandparent
+    # path, which breaks setup.py
+    if isdir(path):
+        rmtree(path)
 
 
 def main():
@@ -20,12 +28,11 @@ def main():
 
     call([NPM, 'link', '--prefix=.'])
     call([NPM, 'install'])
-    try:
-        # die.  The grandparent symlink in there will break setup.py
-        rmtree(join('.', 'lib', 'node_modules'))
-    except:
-        # Well, I guess it wasn't there, I don't care then.
-        pass
+
+    # kill all possible node_modules symlinks that point back to here.
+    _check_clean_recursive_symlink(join('.', 'lib', 'node_modules'))
+    _check_clean_recursive_symlink(join('.', 'lib32', 'node_modules'))
+    _check_clean_recursive_symlink(join('.', 'lib64', 'node_modules'))
 
 
 if __name__ == '__main__':
