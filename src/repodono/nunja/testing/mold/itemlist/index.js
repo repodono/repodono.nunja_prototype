@@ -18,12 +18,10 @@ define([
     Model.prototype.render = function () {
         // This one does not poke to a server, but just reorders the
         // list locally here derived from pre-rendered data.
-        var raw = core.engine.render('repodono.nunja.testing.mold/itemlist', {
+        core.engine.populate(this.element, {
             list_id: this.id,
             items: this.items,
         });
-
-        this.element.innerHTML = raw;
     };
 
     var init = function(element) {

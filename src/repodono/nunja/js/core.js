@@ -116,6 +116,15 @@ define([
             // It should also trigger initElement
         },
 
+        populate: function (element, data) {
+            /*
+            Populate the element that contains a data-nunja identifier
+            with the data involved.
+            */
+            var moldId = element.getAttribute('data-nunja');
+            element.innerHTML = engine.render(moldId, data)
+        },
+
         render: function (moldId, data) {
             /*
             Very simple, basic rendering method.
