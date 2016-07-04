@@ -11,11 +11,8 @@ from repodono.nunja import exc
 from repodono.nunja.registry import Registry
 import repodono.nunja.testing
 
-basic_tmpl_str = """\
-<div {{ _nunja_data_ | safe }}>
-<span>{{ value }}</span>
-</div>
-"""
+basic_tmpl_str = '<span>{{ value }}</span>\n'
+
 
 class RegistryTestCase(unittest.TestCase):
 
@@ -48,14 +45,16 @@ class RegistryTestCase(unittest.TestCase):
     def test_registry_register_module(self):
         self.registry.register_module(repodono.nunja.testing, subdir='mold')
         self.assertEqual(sorted(self.registry.molds.keys()), [
+            '_core_/_default_wrapper_',
             'repodono.nunja.testing.mold/basic',
-            'repodono.nunja.testing.mold/itemlist'
+            'repodono.nunja.testing.mold/itemlist',
         ])
         # duplicate registration should do nothing extra.
         self.registry.register_module(repodono.nunja.testing, subdir='mold')
         self.assertEqual(sorted(self.registry.molds.keys()), [
+            '_core_/_default_wrapper_',
             'repodono.nunja.testing.mold/basic',
-            'repodono.nunja.testing.mold/itemlist'
+            'repodono.nunja.testing.mold/itemlist',
         ])
 
         # Test that the lookup works.
@@ -136,19 +135,20 @@ class RegistryTestCase(unittest.TestCase):
         self.emulate_register_entrypoint(
             'repodono.nunja.no.such.module = repodono.nunja.testing.no:mold')
         self.registry.init_entrypoints()
-        self.assertEqual(len(self.registry.molds), 0)
+        # Defaults.
+        self.assertEqual(len(self.registry.molds), 1)
 
     def test_register_all_entrypoints_fail_no_module(self):
         self.emulate_register_entrypoint(
             'repodono.nunja.testing.badmold = repodono.nunja.no:badmold')
         self.registry.init_entrypoints()
-        self.assertEqual(len(self.registry.molds), 0)
+        self.assertEqual(len(self.registry.molds), 1)
 
     def test_register_all_entrypoints_fail_no_template(self):
         self.emulate_register_entrypoint(
             'repodono.nunja.testing.badmold = repodono.nunja.testing:badmold')
         self.registry.init_entrypoints()
-        self.assertEqual(len(self.registry.molds), 0)
+        self.assertEqual(len(self.registry.molds), 1)
 
     def test_register_all_entrypoints_success(self):
         self.emulate_register_entrypoint(
@@ -191,12 +191,12 @@ class RegistryTestCase(unittest.TestCase):
 
     def test_registry_register_module_not_module(self):
         self.registry.register_module(None)
-        self.assertFalse(self.registry.molds)
+        self.assertEqual(len(self.registry.molds), 1)
 
     def test_registry_register_module_subdir_missing(self):
         self.registry.register_module(repodono.nunja.testing, subdir='notmold')
-        self.assertFalse(self.registry.molds)
+        self.assertEqual(len(self.registry.molds), 1)
 
     def test_registry_register_module_baddir(self):
         self.registry.register_module(repodono.nunja.testing, subdir='badmold')
-        self.assertFalse(self.registry.molds)
+        self.assertEqual(len(self.registry.molds), 1)

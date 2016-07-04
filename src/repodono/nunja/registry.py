@@ -56,6 +56,14 @@ from .exc import TemplateNotFoundError
 REQ_TMPL_NAME = 'template.jinja'
 ENTRY_POINT_NAME = 'repodono.nunja.mold'
 
+# I supposed this can all be hardcoded, but eating ones dogfood can be
+# useful as a litmus test while this keeps the naming scheme consistent,
+# even if usage is a bit different.
+DEFAULT_WRAPPER_NAME = '_core_/_default_wrapper_'
+DEFAULT_MOLDS = {
+    DEFAULT_WRAPPER_NAME: join(dirname(__file__), DEFAULT_WRAPPER_NAME)
+}
+
 logger = getLogger(__name__)
 _marker = object()
 
@@ -66,6 +74,9 @@ class Registry(object):
         self.entry_points = {} if entry_points is None else entry_points
         self.registry_name = registry_name
         self.molds = {}
+        # Forcibly register the default one here as the core rendering
+        # need this wrapper.
+        self.molds.update(DEFAULT_MOLDS)
 
     def lookup_path(self, mold_id, default=_marker):
         """

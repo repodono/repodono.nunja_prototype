@@ -34,6 +34,7 @@ module.exports = function(config) {
 
             {pattern: 'tests/**/*.js', included: false},
             {pattern: 'src/repodono/nunja/molds/**', included: false},
+            {pattern: 'src/repodono/nunja/_core_/**', included: false},
             {pattern: 'src/repodono/nunja/js/*.js', included: false},
             {pattern: 'src/repodono/nunja/testing/**/*', included: false},
         ],
@@ -76,7 +77,14 @@ module.exports = function(config) {
             'karma-junit-reporter',
             'karma-spec-reporter',
             'karma-sinon',
-        ]
+        ],
+
+        /*  Maybe figure out how to integrate external data provider
+            sourced via reversed proxy for better integration tests.
+        proxies: {
+            '/mock': 'http://127.0.0.1/'
+        },
+        */
 
     });
 };

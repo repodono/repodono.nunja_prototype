@@ -34,8 +34,7 @@ define([
                 'css': {},
             });
 
-            expect(results.trim()).to.equal(
-                '<div data-nunja="repodono.nunja.molds/navtable">\n' +
+            expect(results).to.equal(
                 '<table class="">\n' +
                 '  <thead>\n' +
                 '    <tr class="">\n' +
@@ -45,8 +44,7 @@ define([
                 '  <tbody>\n' +
                 '    \n' +
                 '  </tbody>\n' +
-                '</table>\n' +
-                '</div>'
+                '</table>\n'
             )
         });
 
@@ -71,8 +69,7 @@ define([
                 'css': {},
             });
 
-            expect(results.trim()).to.equal(
-                '<div data-nunja="repodono.nunja.molds/navtable">\n' +
+            expect(results).to.equal(
                 '<table class="">\n' +
                 '  <thead>\n' +
                 '    <tr class="">\n' +
@@ -93,8 +90,7 @@ define([
                 '      <td>file</td><td>A File</td><td>100</td>\n' +
                 '    </tr>\n' +
                 '  </tbody>\n' +
-                '</table>\n' +
-                '</div>'
+                '</table>\n'
             );
 
         });

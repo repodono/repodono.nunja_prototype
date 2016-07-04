@@ -5,7 +5,8 @@ define([
 
     var Model = function(element) {
         this.element = element;
-        this.id = element.getAttribute('id');
+        var ul = element.querySelector('[id]');
+        this.id = ul ? ul.getAttribute('id') : '';
         var items = [];
         // generate pre-rendered data, as this mold does not make its
         // own xhr to source end-point (as no endpoints are defined).
@@ -22,8 +23,7 @@ define([
             items: this.items,
         });
 
-        // Lazily using outerHTML for replacement.
-        this.element.outerHTML = raw;
+        this.element.innerHTML = raw;
     };
 
     var init = function(element) {

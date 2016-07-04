@@ -5,44 +5,53 @@ from jinja2 import Template
 from jinja2 import Environment
 
 from repodono.nunja.registry import registry as default_registry
+from repodono.nunja.registry import REQ_TMPL_NAME
+from repodono.nunja.registry import DEFAULT_WRAPPER_NAME
 
 jinja = Environment(autoescape=True)
 
 
-class Renderer(object):
-
-    def __init__(self, name, template_str):
-        # TODO normalize the name to the same system that the underlying
-        # node/javascript framework understands.  Build a system of sort
-        # to achieve this.
-        self.name = name
-        self.template = jinja.from_string(template_str)
-
-    def __call__(self, data):
-        # TODO i18n considerations, where the `_t` is a callable
-        # that provides gettext functionality.
-        nunja_data = 'data-nunja="%s"' % self.name
-        return self.template.render(_nunja_data_=nunja_data, **data)
-
-
 class Engine(object):
 
-    def __init__(self, registry=default_registry):
+    def __init__(
+            self, registry=default_registry,
+            wrapper_name=DEFAULT_WRAPPER_NAME):
         self.registry = registry
-        self._renderer_cache = {}
+        self._template_cache = {}
 
-    def execute(self, name, data):
+        self._core_template_ = self.load_template(wrapper_name)
+
+    def load_template(self, name):
         """
-        Execute a mold with data provided as dict
+        Load/cache the template identified by the template name as found
+        in the registry
         """
 
         # TODO cache invalidation
-        if name not in self._renderer_cache:
+        if name not in self._template_cache:
             path = self.registry.lookup_path(name)
-            with open(join(path, 'template.jinja')) as fd:
-                tmpl = fd.read()
-                self._renderer_cache[name] = renderer = Renderer(name, tmpl)
+            with open(join(path, REQ_TMPL_NAME)) as fd:
+                tstr = fd.read()
+                self._template_cache[name] = template = jinja.from_string(tstr)
         else:
-            renderer = self._renderer_cache[name]
+            template = self._template_cache[name]
 
-        return renderer(data)
+        return template
+
+    def execute(self, name, data, wrapper_tag='div'):
+        """
+        Execute a mold with data provided as dict using template
+        identified by the template name as found in the registry.
+
+        This returns the wrapped content.
+        """
+
+        template = self.load_template(name)
+
+        kwargs = {}
+        kwargs.update(data)
+        kwargs['_nunja_data_'] = 'data-nunja="%s"' % name
+        kwargs['_template_'] = template
+        kwargs['_wrapper_tag_'] = wrapper_tag
+
+        return self._core_template_.render(**kwargs)

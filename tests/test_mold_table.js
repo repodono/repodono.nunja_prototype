@@ -35,7 +35,6 @@ define([
             });
 
             expect(results).to.equal(
-                '<div data-nunja="repodono.nunja.molds/table">\n' +
                 '<table class="">\n' +
                 '  <thead>\n' +
                 '    <tr class="">\n' +
@@ -45,8 +44,7 @@ define([
                 '  <tbody>\n' +
                 '    \n' +
                 '  </tbody>\n' +
-                '</table>\n' +
-                '</div>\n'
+                '</table>\n'
             )
         });
 
@@ -65,7 +63,6 @@ define([
 
             });
             expect(results).to.equal(
-                '<div data-nunja="repodono.nunja.molds/table">\n' +
                 '<table class="">\n' +
                 '  <thead>\n' +
                 '    <tr class="">\n' +
@@ -79,8 +76,7 @@ define([
                 '      <td>2</td><td>Eve Adams</td>\n' +
                 '    </tr>\n' +
                 '  </tbody>\n' +
-                '</table>\n' +
-                '</div>\n'
+                '</table>\n'
             )
         });
 

@@ -40,12 +40,13 @@ setup(
     zip_safe=False,
     install_requires=[
         'setuptools>=11.3',
-        'Jinja2',
+        'Jinja2>=2.4',
     ],
     extras_require={},
     entry_points="""
     [repodono.nunja.mold]
     repodono.nunja.molds = repodono.nunja:molds
+    _core_ = repodono.nunja:_core_
     """,
     test_suite="repodono.nunja.tests.test_suite",
 )

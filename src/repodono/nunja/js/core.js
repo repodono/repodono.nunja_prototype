@@ -1,9 +1,12 @@
 define([
     'nunjucks',
-], function(nunjucks) {
+    // Note that this MUST be available by the environment.
+    'text!_core_/_default_wrapper_/template.jinja',
+], function(nunjucks, default_wrapper_str) {
     'use strict';
 
     var REQ_TMPL_NAME = 'template.jinja';
+    var DEFAULT_WRAPPER_NAME = '_core_/_default_wrapper_';
 
     // TODO figure out how/which/what system to actually use that will
     // make providing pre-compiled templates easier.
@@ -30,6 +33,11 @@ define([
     // TODO break this "module" up into the actual bits when this
     // matures a bit, i.e. move engine out of here if needed.
     var engine = {
+
+        // XXX changing these are currently not supported.
+        '_core_template_': nunjucks.compile(default_wrapper_str, env),
+        '_wrapper_tag_': 'div',
+
         // global scan function - looks up data-nunja ids and look up
         // the default script, execute it on the afflicted element.
         scan: function (content) {
@@ -86,23 +94,34 @@ define([
             elements.forEach(engine.initElement);
         },
 
-        render: function (moldId, data) {
+        execute: function (moldId, data) {
+            /*
+            Execute the complete template, which renders a parent block
+            enclosing with the template that provides the nunja-data
+            attribute.
+            */
             var template = require(moldId + COMPILED_SUFFIX);
-
-            // XXX data need to be defined somehow as an endpoint.
-            // TODO explore the idea of standardized function names for
-            // passing in the data() block associated with the activated
-            // element, or extracting the href and calling that using
-            // async json loading.
 
             var data = data || {};
             // force _nunja_data_ to be consistent with the framework.
             data['_nunja_data_'] = 'data-nunja="' + moldId + '"';
+            data['_template_'] = template;
+            data['_wrapper_tag_'] = engine._wrapper_tag_;
 
-            var results = template.render(data);
+            var results = engine._core_template_.render(data);
 
             // XXX this should actually replace the relevant element
             // that triggered this render.
+            return results;
+            // It should also trigger initElement
+        },
+
+        render: function (moldId, data) {
+            /*
+            Very simple, basic rendering method.
+            */
+            var template = require(moldId + COMPILED_SUFFIX);
+            var results = template.render(data);
             return results;
         }
 

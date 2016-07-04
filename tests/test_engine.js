@@ -30,11 +30,24 @@ define([
 
             var results = this.engine.render(
                 'repodono.nunja.testing.mold/basic', { value: 'Hello User' });
+            expect(results).to.equal('<span>Hello User</span>\n');
+        });
+
+        it('Core engine executes the correct template', function() {
+            document.body.innerHTML = (
+                '<div data-nunja="repodono.nunja.testing.mold/basic"></div>');
+            this.engine.doOnLoad(document.body);
+
+            this.clock.tick(500);
+
+            var results = this.engine.execute(
+                'repodono.nunja.testing.mold/basic', { value: 'Hello User' });
             expect(results).to.equal(
                 '<div data-nunja="repodono.nunja.testing.mold/basic">\n' +
-                '<span>Hello User</span>\n</div>\n'
+                '<span>Hello User</span>\n\n</div>\n'
             )
         });
+
     });
 
     describe('Engine main script loading and ui hooks', function() {
@@ -53,7 +66,7 @@ define([
 
         it('Mold index entry point triggered', function() {
             this.rootEl.innerHTML = (
-                '<ul data-nunja="repodono.nunja.testing.mold/itemlist"></ul>'
+                '<div data-nunja="repodono.nunja.testing.mold/itemlist"></div>'
             );
             this.engine.doOnLoad(this.rootEl);
             this.clock.tick(500);
@@ -67,24 +80,26 @@ define([
             // Note that this is manual, so formatting is different to
             // final result.
             this.rootEl.innerHTML = (
-                '<ul data-nunja="repodono.nunja.testing.mold/itemlist" ' +
-                    'id="sample-list">\n' +
+                '<div data-nunja="repodono.nunja.testing.mold/itemlist">' +
+                '<ul id="sample-list">\n' +
                 '<li>Test Item</li>\n' +
-                '</ul>'
+                '</ul>\n' +
+                '</div>'
             );
             this.engine.doOnLoad(this.rootEl);
             this.clock.tick(500);
 
             // now invoke the assigned model to the element and trigger
             // the render
-            this.rootEl.querySelector('#sample-list').model.render();
+            this.rootEl.querySelector('div').model.render();
             // should be different to what we assigned originally.
             expect(this.rootEl.innerHTML).to.equal(
-                '<ul id="sample-list" ' +
-                    'data-nunja="repodono.nunja.testing.mold/itemlist">\n' +
+                '<div data-nunja="repodono.nunja.testing.mold/itemlist">' +
+                '<ul id="sample-list">\n' +
                 '\n' +
                 '  <li>Test Item</li>\n' +
-                '</ul>\n'
+                '</ul>\n' +
+                '</div>'
             );
 
         });
@@ -104,10 +119,11 @@ define([
             this.rootEl.querySelector('div').model.render();
             // should be different to what we assigned originally.
             expect(this.rootEl.innerHTML).to.equal(
-                '<ul id="" ' +
-                    'data-nunja="repodono.nunja.testing.mold/itemlist">\n' +
+                '<div data-nunja="repodono.nunja.testing.mold/itemlist">' +
+                '<ul id="">\n' +
                 '\n' +
-                '</ul>\n'
+                '</ul>\n' +
+                '</div>'
             );
         });
 
