@@ -49,8 +49,6 @@ from os.path import join
 from logging import getLogger
 from types import ModuleType
 
-from jinja2 import Template
-
 from .exc import TemplateNotFoundError
 
 REQ_TMPL_NAME = 'template.jinja'

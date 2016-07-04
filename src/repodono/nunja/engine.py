@@ -1,7 +1,6 @@
-from os.path import basename
+# -*- coding: utf-8 -*-
 from os.path import join
 
-from jinja2 import Template
 from jinja2 import Environment
 
 from repodono.nunja.registry import registry as default_registry
@@ -12,14 +11,32 @@ jinja = Environment(autoescape=True)
 
 
 class Engine(object):
+    """
+    Nunja core engine
+
+    This takes a nunja mold registry and is able to execute the
+    rendering of templates through nunja identifiers.
+    """
 
     def __init__(
             self, registry=default_registry,
-            wrapper_name=DEFAULT_WRAPPER_NAME):
+            _wrapper_name=DEFAULT_WRAPPER_NAME,
+            _required_template_name=REQ_TMPL_NAME,
+            ):
+        """
+        By default, the engine can be created without arguments which
+        will initialize using the default registry.
+
+        It is possible to initialize using other arguments, but this is
+        unsupported by the main system, and only useful for certain
+        specialized implementations.
+        """
+
         self.registry = registry
         self._template_cache = {}
+        self._required_template_name = _required_template_name
 
-        self._core_template_ = self.load_template(wrapper_name)
+        self._core_template_ = self.load_template(_wrapper_name)
 
     def load_template(self, name):
         """
@@ -30,7 +47,7 @@ class Engine(object):
         # TODO cache invalidation
         if name not in self._template_cache:
             path = self.registry.lookup_path(name)
-            with open(join(path, REQ_TMPL_NAME)) as fd:
+            with open(join(path, self._required_template_name)) as fd:
                 tstr = fd.read()
                 self._template_cache[name] = template = jinja.from_string(tstr)
         else:
