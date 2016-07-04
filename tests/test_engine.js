@@ -41,43 +41,45 @@ define([
         beforeEach(function() {
             this.clock = sinon.useFakeTimers();
             this.engine = core.engine;
+            // create new root element to aid cleanup.
+            document.body.innerHTML = '<div id="root"></div>';
+            this.rootEl = document.body.querySelector('#root');
         });
 
         afterEach(function() {
             this.clock.restore();
-            document.body.classList = [];
             document.body.innerHTML = "";
         });
 
         it('Mold index entry point triggered', function() {
-            document.body.innerHTML = (
+            this.rootEl.innerHTML = (
                 '<ul data-nunja="repodono.nunja.testing.mold/itemlist"></ul>'
             );
-            this.engine.doOnLoad(document.body);
+            this.engine.doOnLoad(this.rootEl);
             this.clock.tick(500);
 
             // Show that the hook fired.
-            expect(document.body.classList.contains('nunja-test-itemlist')
+            expect(this.rootEl.classList.contains('nunja-test-itemlist')
                 ).to.equal(true);
         });
 
         it('Basic in-place rendering', function() {
             // Note that this is manual, so formatting is different to
             // final result.
-            document.body.innerHTML = (
+            this.rootEl.innerHTML = (
                 '<ul data-nunja="repodono.nunja.testing.mold/itemlist" ' +
                     'id="sample-list">\n' +
                 '<li>Test Item</li>\n' +
                 '</ul>'
             );
-            this.engine.doOnLoad(document.body);
+            this.engine.doOnLoad(this.rootEl);
             this.clock.tick(500);
 
             // now invoke the assigned model to the element and trigger
             // the render
-            document.body.querySelector('#sample-list').model.render();
+            this.rootEl.querySelector('#sample-list').model.render();
             // should be different to what we assigned originally.
-            expect(document.body.innerHTML).to.equal(
+            expect(this.rootEl.innerHTML).to.equal(
                 '<ul id="sample-list" ' +
                     'data-nunja="repodono.nunja.testing.mold/itemlist">\n' +
                 '\n' +
@@ -91,17 +93,17 @@ define([
             // I have no idea what the "correct" behavior is, but I am
             // going to define this as able to trigger the load and
             // hook based on the data-nunja identifier.
-            document.body.innerHTML = (
+            this.rootEl.innerHTML = (
                 '<div data-nunja="repodono.nunja.testing.mold/itemlist"></div>'
             );
-            this.engine.doOnLoad(document.body);
+            this.engine.doOnLoad(this.rootEl);
             this.clock.tick(500);
 
             // now invoke the assigned model to the element and trigger
             // the render - in our case it replaces outerHTML.
-            document.body.querySelector('div').model.render();
+            this.rootEl.querySelector('div').model.render();
             // should be different to what we assigned originally.
-            expect(document.body.innerHTML).to.equal(
+            expect(this.rootEl.innerHTML).to.equal(
                 '<ul id="" ' +
                     'data-nunja="repodono.nunja.testing.mold/itemlist">\n' +
                 '\n' +
