@@ -44,18 +44,16 @@ class RegistryTestCase(unittest.TestCase):
 
     def test_registry_register_module(self):
         self.registry.register_module(repodono.nunja.testing, subdir='mold')
-        self.assertEqual(sorted(self.registry.molds.keys()), [
+        items = [
             '_core_/_default_wrapper_',
             'repodono.nunja.testing.mold/basic',
+            'repodono.nunja.testing.mold/import_with_data',
             'repodono.nunja.testing.mold/itemlist',
-        ])
+        ]
+        self.assertEqual(sorted(self.registry.molds.keys()), items)
         # duplicate registration should do nothing extra.
         self.registry.register_module(repodono.nunja.testing, subdir='mold')
-        self.assertEqual(sorted(self.registry.molds.keys()), [
-            '_core_/_default_wrapper_',
-            'repodono.nunja.testing.mold/basic',
-            'repodono.nunja.testing.mold/itemlist',
-        ])
+        self.assertEqual(sorted(self.registry.molds.keys()), items)
 
         # Test that the lookup works.
         path = self.registry.lookup_path('repodono.nunja.testing.mold/basic')

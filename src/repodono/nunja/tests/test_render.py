@@ -53,3 +53,26 @@ class BaseTestCase(unittest.TestCase):
             '<span>&lt;xss&gt;</span>\n'
             '</div>'
         )
+
+    def test_manual_include(self):
+        data = {
+            'list_template': self.engine.load_template(
+                'repodono.nunja.testing.mold/itemlist'),
+            'itemlists': [['list_1', ['Item 1', 'Item 2']]],
+        }
+
+        result = self.engine.execute(
+            'repodono.nunja.testing.mold/import_with_data', data=data)
+
+        self.assertEqual(
+            result,
+            '<div data-nunja="repodono.nunja.testing.mold/import_with_data">\n'
+            '<dl id="">\n\n'
+            '  <dt>list_1</dt>\n'
+            '  <dd><ul id="list_1">\n\n'
+            '  <li>Item 1</li>\n'
+            '  <li>Item 2</li>\n'
+            '</ul></dd>\n'
+            '</dl>\n'
+            '</div>'
+        )
