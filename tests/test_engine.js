@@ -201,6 +201,52 @@ define([
 
         });
 
+        it('Mold isolation', function() {
+            // need to be sure the events as is do not cross-pollinate.
+            this.rootEl.innerHTML = (
+                '<div id="n1">\n' +
+                '<button class="reset">Reset</button>\n' +
+                '<div data-nunja="repodono.nunja.testing.mold/itemlist">' +
+                '<ul id="sample1">\n' +
+                '  <li>Sample 1</li>\n' +
+                '</ul>\n' +
+                '</div>' +
+                '</div>' +
+
+                '<div id="n2">\n' +
+                '<button class="reset">Reset</button>\n' +
+                '<div data-nunja="repodono.nunja.testing.mold/itemlist">' +
+                '<ul id="sample2">\n' +
+                '  <li>Sample 2</li>\n' +
+                '</ul>\n' +
+                '</div>' +
+                '</div>'
+            );
+
+            this.engine.doOnLoad(document.body);
+            this.clock.tick(500);
+            this.rootEl.querySelector('#n2 div').model.items = [
+                'Resample 1', 'Resample 2'];
+
+            this.rootEl.querySelector('#n1 .reset').click();
+            expect(this.rootEl.querySelector('#sample2').innerHTML).to.equal(
+                '\n' +
+                '  <li>Sample 2</li>\n'
+            );
+
+            this.rootEl.querySelector('#n2 .reset').click();
+            expect(this.rootEl.querySelector('#sample2').innerHTML).to.equal(
+                '\n\n' +
+                '  <li>Resample 1</li>\n' +
+                '  <li>Resample 2</li>\n'
+            );
+            expect(this.rootEl.querySelector('#sample1').innerHTML).to.equal(
+                '\n\n' +
+                '  <li>Sample 1</li>\n'
+            );
+
+        });
+
     });
 
 });
