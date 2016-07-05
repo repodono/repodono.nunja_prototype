@@ -45,6 +45,15 @@ define([
             return Array.prototype.slice.call(elements);
         },
 
+        load_template: function (moldId) {
+            /*
+            This requires the template to have been compiled already and
+            be provided through requirejs.
+            */
+            var compiledId = moldId + COMPILED_SUFFIX;
+            return require(compiledId);
+        },
+
         loadTemplateAsync: function(moldId) {
             // this ensures the templates are loaded and compiled and
             // make it available via requirejs.

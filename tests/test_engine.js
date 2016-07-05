@@ -5,6 +5,9 @@ define([
     'text!repodono.nunja.testing.mold/itemlist/template.jinja',
     // also the itemlist entry point
     'repodono.nunja.testing.mold/itemlist/index',
+    // the import_with_data mold.
+    'text!repodono.nunja.testing.mold/import_with_data/template.jinja',
+    'repodono.nunja.testing.mold/import_with_data/index',
 ], function(core) {
     'use strict';
 
@@ -244,6 +247,66 @@ define([
                 '\n\n' +
                 '  <li>Sample 1</li>\n'
             );
+
+        });
+
+    });
+
+    describe('Support of imported template by data', function() {
+        beforeEach(function() {
+            this.clock = sinon.useFakeTimers();
+            this.engine = core.engine;
+            // create new root element to aid cleanup.
+            document.body.innerHTML = '<div id="root"></div>';
+            this.rootEl = document.body.querySelector('#root');
+        });
+
+        afterEach(function() {
+            document.body.innerHTML = "";
+            this.clock.restore();
+        });
+
+        it('Mold index entry point triggered', function() {
+            this.rootEl.innerHTML = (
+                '<div data-nunja="repodono.nunja.testing.mold/' +
+                                 'import_with_data"></div>'
+            );
+            this.engine.doOnLoad(document.body);
+            this.clock.tick(500);
+
+            this.rootEl.querySelector('div').model.itemlists = [
+                ['list_1', ['Item 1', 'Item 2']],
+            ];
+            this.rootEl.querySelector('div').model.render();
+
+            expect(this.rootEl.querySelector('div').innerHTML).to.equal(
+                '<dl id="">\n' +
+                '\n' +
+                '  <dt>list_1</dt>\n' +
+                '  <dd><ul id="list_1">\n' +
+                '\n' +
+                '  <li>Item 1</li>\n' +
+                '  <li>Item 2</li>\n' +
+                '</ul>\n' +
+                '</dd>\n' +
+                '</dl>\n'
+            );
+
+            // As this was basically rendered out of band, no init call
+            // was made, so these events should be null
+            this.rootEl.querySelector('li').click();
+            expect(this.rootEl.querySelectorAll('li').length).to.equal(2);
+
+            // So, how do we do this while providing actions?  Should
+            // there be another rendering method that will also write
+            // out the wrapper with the data-nunja stub so that the
+            // parent can trigger the onLoad manually so that all the
+            // init hooks will be automatically called on the re-
+            // rendered results?
+
+            // What about an actual loader for both nunjucks/jinja2 so
+            // that the templates can be continued to be shared?
+
 
         });
 
