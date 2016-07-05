@@ -77,6 +77,8 @@ define([
 
         initElement: function(element, index, array) {
             /*
+            This is only called once ever.
+
             element - The element we want.
             index - passed in by forEach
             array - passed in by forEach
@@ -110,10 +112,7 @@ define([
 
             var results = engine._core_template_.render(data);
 
-            // XXX this should actually replace the relevant element
-            // that triggered this render.
             return results;
-            // It should also trigger initElement
         },
 
         populate: function (element, data) {

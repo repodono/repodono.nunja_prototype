@@ -4,15 +4,12 @@ define([
     'use strict';
 
     var Model = function(element) {
+        this.resetCount = 0;
+        this.removeCount = 0;
         this.element = element;
-        var ul = element.querySelector('[id]');
-        this.id = ul ? ul.getAttribute('id') : '';
-        var items = [];
-        // generate pre-rendered data, as this mold does not make its
-        // own xhr to source end-point (as no endpoints are defined).
-        Array.prototype.slice.call(element.querySelectorAll('li')
-            ).forEach(function (e) { items.push(e.textContent)});
-        this.items = items;
+        // Is this early kind of implicit hooking a good idea as the
+        // general case?
+        this.hook()
     };
 
     Model.prototype.render = function () {
@@ -22,16 +19,52 @@ define([
             list_id: this.id,
             items: this.items,
         });
+        this.hook();
+    };
+
+    Model.prototype.mkRemove = function (e) {
+        self = this;
+        return function () {
+            self.removeCount++;
+            e.remove();
+        }
+    }
+
+    Model.prototype.hook = function () {
+        // bound for later usage in forloop.
+        self = this;
+        var ul = this.element.querySelector('[id]');
+        this.id = ul ? ul.getAttribute('id') : '';
+        var items = [];
+        var nodes = [];
+        // generate pre-rendered data, as this mold does not make its
+        // own xhr to source end-point (as no endpoints are defined).
+        Array.prototype.slice.call(this.element.querySelectorAll('li')
+            ).forEach(function (e) {
+                nodes.push(e);
+                e.addEventListener('click', self.mkRemove(e));
+                items.push(e.textContent);
+            });
+        this.items = items;
+        this.nodes = nodes;
+    }
+
+    Model.prototype.reset = function () {
+        this.resetCount++;
+        this.render();
     };
 
     var init = function(element) {
+        // it is the init's responsiblity to hook things
         var model = new Model(element);
         var rootEl = element.parentElement;
-        // only really for testing purposes.
-        rootEl.classList.add('nunja-test-itemlist');
-        if (rootEl.querySelector('.reset')) {
-            console.log('reset');
+        var resetEl = rootEl.querySelector('.reset');
+        if (resetEl) {
+            resetEl.addEventListener('click', function() {
+                model.reset();
+            });
         }
+
         element.model = model;
     };
 
