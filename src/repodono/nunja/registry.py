@@ -245,22 +245,30 @@ class Registry(object):
         })
 
 
-# Finally, make use of this via the pkg_resources
-_entry_points = {}
+def create_default_registry(name):
+    """
+    Default registry constructor that will load all the entry points
+    then add that to the returned Registry.
+    """
 
-try:
-    from pkg_resources import iter_entry_points
-except ImportError:  # pragma: no cover
-    logger.error(
-        'The `repodono.nunja` registry is disabled as the setuptools package '
-        'is missing the `pkg_resources` module'
-    )
-else:  # pragma: no cover
-    # First just dump all the relevant bits from the entry point into
-    # the _source dict.
-    for ep in iter_entry_points(ENTRY_POINT_NAME):
-        _entry_points[ep.name] = ep
+    _entry_points = {}
+
+    try:
+        from pkg_resources import iter_entry_points
+    except ImportError:  # pragma: no cover
+        logger.error(
+            'The `repodono.nunja` registry is disabled as the setuptools '
+            'package is missing the `pkg_resources` module'
+        )
+    else:  # pragma: no cover
+        # First just dump all the relevant bits from the entry point into
+        # the _source dict.
+        for ep in iter_entry_points(ENTRY_POINT_NAME):
+            _entry_points[ep.name] = ep
+
+    # Then create the default registry based on that.
+    return Registry(name, _entry_points)
 
 
-# Then create the default registry based on that.
-registry = Registry(__name__, _entry_points)
+# Create a default, uninitialized instance.
+registry = create_default_registry(__name__)
