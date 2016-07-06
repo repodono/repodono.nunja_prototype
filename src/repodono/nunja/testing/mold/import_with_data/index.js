@@ -12,12 +12,13 @@ define([
             'repodono.nunja.testing.mold/itemlist');
     };
 
-    Model.prototype.render = function () {
+    Model.prototype.render = function (list_id) {
         // This one does not poke to a server, but just reorders the
         // list locally here derived from pre-rendered data.
         core.engine.populate(this.element, {
             list_template: this.list_template,
             itemlists: this.itemlists,
+            list_id: list_id ? list_id : '',
         });
     };
 

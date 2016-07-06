@@ -307,7 +307,45 @@ define([
             // What about an actual loader for both nunjucks/jinja2 so
             // that the templates can be continued to be shared?
 
+        });
 
+        it('Rendering via include in for loop', function() {
+            this.rootEl.innerHTML = (
+                '<div data-nunja="repodono.nunja.testing.mold/' +
+                                 'import_with_data"></div>'
+            );
+            this.engine.doOnLoad(document.body);
+            this.clock.tick(500);
+
+            this.rootEl.querySelector('div').model.itemlists = [
+                ['list_1', ['Item 1', 'Item 2']],
+                ['list_2', ['Item 3', 'Item 4']],
+                ['list_3', ['Item 5', 'Item 6']],
+            ];
+            this.rootEl.querySelector('div').model.render('root_list');
+
+            expect(this.rootEl.querySelector('div').innerHTML).to.equal(
+                '<dl id="root_list">\n\n' +
+                '  <dt>list_1</dt>\n' +
+                '  <dd><ul id="list_1">\n\n' +
+                '  <li>Item 1</li>\n' +
+                '  <li>Item 2</li>\n' +
+                '</ul>\n' +
+                '</dd>\n' +
+                '  <dt>list_2</dt>\n' +
+                '  <dd><ul id="list_2">\n\n' +
+                '  <li>Item 3</li>\n' +
+                '  <li>Item 4</li>\n' +
+                '</ul>\n' +
+                '</dd>\n' +
+                '  <dt>list_3</dt>\n' +
+                '  <dd><ul id="list_3">\n\n' +
+                '  <li>Item 5</li>\n' +
+                '  <li>Item 6</li>\n' +
+                '</ul>\n' +
+                '</dd>\n' +
+                '</dl>\n'
+            );
         });
 
     });
