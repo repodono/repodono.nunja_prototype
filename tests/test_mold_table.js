@@ -17,7 +17,7 @@ define([
             // if it's not there already.
             document.body.innerHTML = (
                 '<div data-nunja="repodono.nunja.molds/table"></div>');
-            this.engine.doOnLoad(document.body);
+            this.engine.do_onload(document.body);
             this.clock.tick(500);
         });
 

@@ -28,7 +28,7 @@ define([
         it('Core engine renders the correct template', function() {
             document.body.innerHTML = (
                 '<div data-nunja="repodono.nunja.testing.mold/basic"></div>');
-            this.engine.doOnLoad(document.body);
+            this.engine.do_onload(document.body);
 
             this.clock.tick(500);
 
@@ -40,7 +40,7 @@ define([
         it('Core engine executes the correct template', function() {
             document.body.innerHTML = (
                 '<div data-nunja="repodono.nunja.testing.mold/basic"></div>');
-            this.engine.doOnLoad(document.body);
+            this.engine.do_onload(document.body);
 
             this.clock.tick(500);
 
@@ -90,7 +90,7 @@ define([
             this.rootEl.innerHTML = (
                 '<div data-nunja="repodono.nunja.testing.mold/itemlist"></div>'
             );
-            this.engine.doOnLoad(document.body);
+            this.engine.do_onload(document.body);
             this.clock.tick(500);
 
             // Show that the hook fired as model was set.
@@ -108,7 +108,7 @@ define([
                 '</ul>\n' +
                 '</div>'
             );
-            this.engine.doOnLoad(document.body);
+            this.engine.do_onload(document.body);
             this.clock.tick(500);
 
             // now invoke the assigned model to the element and trigger
@@ -131,7 +131,7 @@ define([
             this.rootEl.innerHTML = (
                 '<div data-nunja="repodono.nunja.testing.mold/itemlist"></div>'
             );
-            this.engine.doOnLoad(document.body);
+            this.engine.do_onload(document.body);
             this.clock.tick(500);
 
             // The model would have been assigned; in alternative
@@ -156,7 +156,7 @@ define([
                 '</ul>\n' +
                 '</div>'
             );
-            this.engine.doOnLoad(document.body);
+            this.engine.do_onload(document.body);
             this.clock.tick(500);
             this.rootEl.querySelector('div').model.items = [
                 'Manual 1', 'Manual 2'];
@@ -182,7 +182,7 @@ define([
                 '</ul>\n' +
                 '</div>'
             );
-            this.engine.doOnLoad(document.body);
+            this.engine.do_onload(document.body);
             this.clock.tick(500);
 
             var model = this.rootEl.querySelector('div').model;
@@ -245,7 +245,7 @@ define([
                 '</div>'
             );
 
-            this.engine.doOnLoad(document.body);
+            this.engine.do_onload(document.body);
             this.clock.tick(500);
             this.rootEl.querySelector('#n2 div').model.items = [
                 'Resample 1', 'Resample 2'];
@@ -290,7 +290,7 @@ define([
                 '<div data-nunja="repodono.nunja.testing.mold/' +
                                  'import_with_data"></div>'
             );
-            this.engine.doOnLoad(document.body);
+            this.engine.do_onload(document.body);
             this.clock.tick(500);
 
             this.rootEl.querySelector('div').model.itemlists = [
@@ -320,7 +320,7 @@ define([
             // So, how do we do this while providing actions?  Should
             // there be another rendering method that will also write
             // out the wrapper with the data-nunja stub so that the
-            // parent can trigger the onLoad manually so that all the
+            // parent can trigger the onload manually so that all the
             // init hooks will be automatically called on the re-
             // rendered results?
 
@@ -334,7 +334,7 @@ define([
                 '<div data-nunja="repodono.nunja.testing.mold/' +
                                  'import_with_data"></div>'
             );
-            this.engine.doOnLoad(document.body);
+            this.engine.do_onload(document.body);
             this.clock.tick(500);
 
             this.rootEl.querySelector('div').model.itemlists = [

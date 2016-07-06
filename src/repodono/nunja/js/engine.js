@@ -124,7 +124,7 @@ define([
         }
     };
 
-    Engine.prototype.doOnLoad = function (content) {
+    Engine.prototype.do_onload = function (content) {
         var elements = this.scan(content);
         var self = this;
         elements.forEach(function (element, index, array) {
