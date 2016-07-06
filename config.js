@@ -13,6 +13,7 @@
             'text': 'node_modules/requirejs-text/text',
             'nunjucks': 'node_modules/nunjucks/browser/nunjucks',
             'repodono.nunja.core': 'src/repodono/nunja/js/core',
+            'repodono.nunja.engine': 'src/repodono/nunja/js/engine',
         },
         shim: {
         },

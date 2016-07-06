@@ -1,4 +1,5 @@
 define([
+    'nunjucks',
     'repodono.nunja.core',
     // Templates has to be preloaded first to emulate its availability.
     'text!repodono.nunja.testing.mold/basic/template.jinja',
@@ -8,7 +9,7 @@ define([
     // the import_with_data mold.
     'text!repodono.nunja.testing.mold/import_with_data/template.jinja',
     'repodono.nunja.testing.mold/import_with_data/index',
-], function(core) {
+], function(nunjucks, core) {
     'use strict';
 
     window.mocha.setup('bdd');
@@ -49,6 +50,24 @@ define([
                 '<div data-nunja="repodono.nunja.testing.mold/basic">\n' +
                 '<span>Hello User</span>\n\n</div>\n'
             )
+        });
+
+        it('Core engine reload async wrapper', function() {
+            var callback = function (compiled) {
+                c = compiled;
+            }
+
+            // testing double to be sure that all async calls are, well
+            // async.
+            for (var i in [1, 2]) {
+                var c = null;
+                this.engine.load_template_async(
+                    '_core_/_default_wrapper_', callback);
+                expect(c).to.equal(null);
+                this.clock.tick(500);
+                expect(c.render({'_template_': nunjucks.compile('hello')})
+                    ).to.equal('< >\nhello\n</>\n');
+            }
         });
 
     });
@@ -297,6 +316,7 @@ define([
             this.rootEl.querySelector('li').click();
             expect(this.rootEl.querySelectorAll('li').length).to.equal(2);
 
+            // XXX
             // So, how do we do this while providing actions?  Should
             // there be another rendering method that will also write
             // out the wrapper with the data-nunja stub so that the
