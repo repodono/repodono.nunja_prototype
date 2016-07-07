@@ -192,6 +192,27 @@ class RegistryTestCase(unittest.TestCase):
             contents = fd.read()
         self.assertEqual(contents, basic_tmpl_str)
 
+    def test_register_all_entrypoints_mold_id_to_path_inside(self):
+        self.emulate_register_entrypoint(
+            'rntm = repodono.nunja.testing:mold')
+
+        with self.assertRaises(KeyError):
+            # As this is not a valid mold_id
+            path1 = self.registry.mold_id_to_path(
+                'rntm/itemlist/template.jinja')
+
+        # can lookup before registration
+        path1 = self.registry.lookup_path('rntm/itemlist/template.jinja')
+
+        self.registry.init_entrypoints()
+        # lookup after registration
+        path2 = self.registry.lookup_path('rntm/itemlist/template.jinja')
+        self.assertEqual(path1, path2)
+
+        with open(join(path2), 'r') as fd:
+            contents = fd.readline()
+        self.assertEqual(contents, '<ul id="{{ list_id }}">\n')
+
     def test_register_all_entrypoints_success_alt_name(self):
         self.emulate_register_entrypoint(
             'repodono.nunja.testmold = repodono.nunja.testing:mold')

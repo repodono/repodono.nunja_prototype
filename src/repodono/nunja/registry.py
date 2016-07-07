@@ -113,7 +113,6 @@ class Registry(object):
             return handle_default(
                 'mold_id %s resolves to entry point that failed to import')
 
-        # XXX not searching through all paths
         for path in module.__path__:
             full_path = join(path, ep.attrs[0], mold_basename)
             try:
@@ -127,10 +126,12 @@ class Registry(object):
             'mold_id %s does not lead to a valid template.jinja')
 
     def lookup_path(self, mold_id_path, default=_marker):
-        # Should point to a valid location inside the mold.
-        fragments = mold_id_path.split('/', 2)
-        # subpath = path_fragments[2]
-        return self.mold_id_to_path(mold_id_path, default)
+        fragments = mold_id_path.split('/')
+        mold_id = '/'.join(fragments[:2])
+        subpath = fragments[2:]
+        path = self.mold_id_to_path(mold_id, default)
+        return join(path, *subpath)
+        # TODO Should a lookup_template be implemented?
 
     def verify_path(self, path):
         if not exists(join(path, REQ_TMPL_NAME)):
