@@ -31,7 +31,8 @@ class RegistryTestCase(unittest.TestCase):
         target = join(
             dirname(repodono.nunja.testing.__file__), 'mold', 'basic')
         self.registry.register_mold(target)
-        self.assertEqual(self.registry.molds['basic'], target)
+        # Default prefix is automatically added.
+        self.assertEqual(self.registry.molds['_/basic'], target)
 
         # can't duplicate register
         with self.assertRaises(KeyError):
