@@ -6,8 +6,7 @@ from jinja2 import Environment
 from repodono.nunja.registry import registry as default_registry
 from repodono.nunja.registry import REQ_TMPL_NAME
 from repodono.nunja.registry import DEFAULT_WRAPPER_NAME
-
-jinja = Environment(autoescape=True)
+from repodono.nunja.loader import NunjaLoader
 
 
 class Engine(object):
@@ -19,7 +18,9 @@ class Engine(object):
     """
 
     def __init__(
-            self, registry=default_registry,
+            self,
+            registry=default_registry,
+            jinja=None,
             _wrapper_name=DEFAULT_WRAPPER_NAME,
             _required_template_name=REQ_TMPL_NAME,
             ):
@@ -33,10 +34,13 @@ class Engine(object):
         """
 
         self.registry = registry
-        self._template_cache = {}
+        self.jinja = jinja if jinja else Environment(
+            autoescape=True,
+            loader=NunjaLoader(registry)
+        )
         self._required_template_name = _required_template_name
 
-        self._core_template_ = self.load_template(_wrapper_name)
+        self._core_template_ = self.load_mold(_wrapper_name)
 
     def load_template(self, name):
         """
@@ -44,30 +48,30 @@ class Engine(object):
         in the registry
         """
 
-        # TODO cache invalidation
-        if name not in self._template_cache:
-            path = self.registry.lookup_path(name)
-            with open(join(path, self._required_template_name)) as fd:
-                tstr = fd.read()
-                self._template_cache[name] = template = jinja.from_string(tstr)
-        else:
-            template = self._template_cache[name]
+        return self.jinja.get_template(name)
 
-        return template
-
-    def execute(self, name, data, wrapper_tag='div'):
+    def load_mold(self, mold_id):
         """
-        Execute a mold with data provided as dict using template
-        identified by the template name as found in the registry.
+        Load the default, required template from the mold `mold_id`.
+        """
+
+        return self.load_template(join(mold_id, self._required_template_name))
+
+    def execute(self, mold_id, data, wrapper_tag='div'):
+        """
+        Execute a mold `mold_id` by rendering through jinja
+
+        This is done using its default template, with data provided as
+        dict.
 
         This returns the wrapped content.
         """
 
-        template = self.load_template(name)
+        template = self.load_mold(mold_id)
 
         kwargs = {}
         kwargs.update(data)
-        kwargs['_nunja_data_'] = 'data-nunja="%s"' % name
+        kwargs['_nunja_data_'] = 'data-nunja="%s"' % mold_id
         kwargs['_template_'] = template
         kwargs['_wrapper_tag_'] = wrapper_tag
 

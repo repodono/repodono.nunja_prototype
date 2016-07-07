@@ -2,6 +2,7 @@ import unittest
 from os.path import join
 from os.path import dirname
 
+from jinja2 import TemplateNotFound
 import repodono.nunja
 from repodono.nunja.engine import Engine
 from repodono.nunja.registry import Registry
@@ -30,17 +31,18 @@ class BaseTestCase(unittest.TestCase):
             '</div>'
         )
 
-        # Should work again, from cache.
-        result = self.engine.execute(
-            'repodono.nunja.testing.mold/basic',
-            data={'value': 'Hello World!'})
+    def test_template_retrieval_and_render(self):
+        # As this was retrieved directly, none of the "mold" bits are
+        # provided by the result.
+        result = self.engine.load_template(
+            'repodono.nunja.testing.mold/basic/template.jinja'
+        ).render(value='Hello World!')
+        self.assertEqual(result, '<span>Hello World!</span>')
 
-        self.assertEqual(
-            result,
-            '<div data-nunja="repodono.nunja.testing.mold/basic">\n'
-            '<span>Hello World!</span>\n'
-            '</div>'
-        )
+    def test_template_retrieval_not_found(self):
+        with self.assertRaises(TemplateNotFound):
+            result = self.engine.load_template(
+                'repodono.nunja.testing.mold/basic/no_such_template.jinja')
 
     def test_base_xss_handling(self):
         result = self.engine.execute(
@@ -56,7 +58,7 @@ class BaseTestCase(unittest.TestCase):
 
     def test_manual_include(self):
         data = {
-            'list_template': self.engine.load_template(
+            'list_template': self.engine.load_mold(
                 'repodono.nunja.testing.mold/itemlist'),
             'itemlists': [['list_1', ['Item 1', 'Item 2']]],
         }
@@ -79,7 +81,7 @@ class BaseTestCase(unittest.TestCase):
 
     def test_manual_include_multilist(self):
         data = {
-            'list_template': self.engine.load_template(
+            'list_template': self.engine.load_mold(
                 'repodono.nunja.testing.mold/itemlist'),
             'list_id': 'root_id',
             'itemlists': [
