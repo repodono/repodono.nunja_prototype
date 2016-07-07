@@ -1,10 +1,15 @@
+# -*- coding: utf-8 -*-
+import logging
 import sys
 import os
 from os.path import join
-from shutil import rmtree
 
-from subprocess import check_output
 from subprocess import call
+
+logging.basicConfig(
+    level='INFO',
+    format='%(asctime)s %(levelname)s %(name)s %(message)s'
+)
 
 NODE = 'node'
 NPM = 'npm'
