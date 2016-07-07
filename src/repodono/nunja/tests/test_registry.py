@@ -38,6 +38,27 @@ class RegistryTestCase(unittest.TestCase):
         with self.assertRaises(KeyError):
             self.registry.register_mold(target)
 
+    def test_registry_register_mold_manual(self):
+        target = join(
+            dirname(repodono.nunja.testing.__file__), 'mold', 'basic')
+        self.registry.register_mold(target, mold_id='blah/basic')
+        # Default prefix is automatically added.
+        self.assertEqual(self.registry.molds['blah/basic'], target)
+        self.assertEqual(self.registry.mold_id_to_path('blah/basic'), target)
+
+    def test_registry_register_mold_manual_failures(self):
+        target = join(
+            dirname(repodono.nunja.testing.__file__), 'mold', 'basic')
+
+        with self.assertRaises(KeyError):
+            self.registry.register_mold(target, mold_id='basic')
+
+        with self.assertRaises(KeyError):
+            self.registry.register_mold(target, mold_id='not/asic')
+
+        with self.assertRaises(KeyError):
+            self.registry.register_mold(target, mold_id='is/invalid/basic')
+
     def test_registry_register_mold_bad(self):
         target = join(dirname(repodono.nunja.testing.__file__), 'badmold')
         with self.assertRaises(exc.TemplateNotFoundError):
@@ -57,77 +78,83 @@ class RegistryTestCase(unittest.TestCase):
         self.assertEqual(sorted(self.registry.molds.keys()), items)
 
         # Test that the lookup works.
-        path = self.registry.lookup_path('repodono.nunja.testing.mold/basic')
+        path = self.registry.mold_id_to_path(
+            'repodono.nunja.testing.mold/basic')
         with open(join(path, 'template.jinja'), 'r') as fd:
             contents = fd.read()
         self.assertEqual(contents, basic_tmpl_str)
 
-    def test_lookup_from_entrypoint_recommended(self):
+    def test_mold_id_to_path_from_entrypoint_recommended(self):
         # Recommended syntax
         self.emulate_register_entrypoint(
             'repodono.nunja.testing.mold = repodono.nunja.testing:mold')
-        path = self.registry.lookup_path('repodono.nunja.testing.mold/basic')
+        path = self.registry.mold_id_to_path(
+            'repodono.nunja.testing.mold/basic')
         with open(join(path, 'template.jinja'), 'r') as fd:
             contents = fd.read()
         self.assertEqual(contents, basic_tmpl_str)
 
-    def test_lookup_from_entrypoint_alternative(self):
+    def test_mold_id_to_path_from_entrypoint_alternative(self):
         # Working but alternative to the recommended naming
         self.emulate_register_entrypoint(
             'repodono.nunja.testmold = repodono.nunja.testing:mold')
-        path = self.registry.lookup_path('repodono.nunja.testmold/basic')
+        path = self.registry.mold_id_to_path('repodono.nunja.testmold/basic')
         with open(join(path, 'template.jinja'), 'r') as fd:
             contents = fd.read()
         self.assertEqual(contents, basic_tmpl_str)
 
-    def test_lookup_from_entrypoint_import_error(self):
+    def test_mold_id_to_path_from_entrypoint_import_error(self):
         # Working but alternative to the recommended naming
         self.emulate_register_entrypoint(
             'repodono.nunja.no.such.module = repodono.nunja.no:mold')
         with self.assertRaises(KeyError):
-            self.registry.lookup_path('repodono.nunja.no.such.module/mold')
-        self.assertEqual(self.registry.lookup_path(
+            self.registry.mold_id_to_path('repodono.nunja.no.such.module/mold')
+        self.assertEqual(self.registry.mold_id_to_path(
             'repodono.nunja.no.such.module/mold', ''), '')
 
-    def test_bad_lookup_no_entrypoint(self):
+    def test_bad_mold_id_to_path_no_entrypoint(self):
         with self.assertRaises(KeyError):
-            self.registry.lookup_path('repodono.nunja.testing.mold')
+            self.registry.mold_id_to_path('repodono.nunja.testing.mold')
 
         with self.assertRaises(KeyError):
-            self.registry.lookup_path('repodono.nunja.testing.mold/basic')
+            self.registry.mold_id_to_path('repodono.nunja.testing.mold/basic')
 
-    def test_bad_lookup_with_entrypoint(self):
+    def test_bad_mold_id_to_path_with_entrypoint(self):
         self.emulate_register_entrypoint(
             'repodono.nunja.testing.mold = repodono.nunja.testing:mold')
 
         with self.assertRaises(KeyError):
-            self.registry.lookup_path('repodono.nunja.testing.mold')
+            self.registry.mold_id_to_path('repodono.nunja.testing.mold')
 
         self.assertEqual(
-            self.registry.lookup_path('repodono.nunja.testing.mold', ''), '')
+            self.registry.mold_id_to_path(
+                'repodono.nunja.testing.mold', ''), '')
 
         with self.assertRaises(KeyError):
-            self.registry.lookup_path('repodono.nunja.testing.mold/missing')
+            self.registry.mold_id_to_path(
+                'repodono.nunja.testing.mold/missing')
 
         self.assertEqual(
-            self.registry.lookup_path('repodono.nunja.testing.mold', ''), '')
+            self.registry.mold_id_to_path(
+                'repodono.nunja.testing.mold', ''), '')
 
-    def test_bad_lookup_with_entrypoint_missing_template(self):
+    def test_bad_mold_id_to_path_with_entrypoint_missing_template(self):
         self.emulate_register_entrypoint(
             'repodono.nunja.testing.badmold = repodono.nunja.testing:badmold')
 
         with self.assertRaises(KeyError):
-            self.registry.lookup_path('repodono.nunja.testing.badmold/nomold')
+            self.registry.mold_id_to_path(
+                'repodono.nunja.testing.badmold/nomold')
 
-        self.assertEqual(self.registry.lookup_path(
+        self.assertEqual(self.registry.mold_id_to_path(
             'repodono.nunja.testing.badmold/nomold', ''), '')
 
     @unittest.skipIf(sys.version_info < (3, 3), "py3.3 __init__.py optional")
-    def test_lookup_with_entrypoint_dir_not_real_mod_py3_3(self):
+    def test_mold_id_to_path_with_entrypoint_dir_not_real_mod_py3_3(self):
         self.emulate_register_entrypoint(
             'repodono.nunja.testing.py3 = repodono.nunja.testing.py3mod:molds')
 
-        self.assertNotEqual(self.registry.lookup_path(
+        self.assertNotEqual(self.registry.mold_id_to_path(
             'repodono.nunja.testing.py3/mold', ''), '')
 
     def test_register_all_entrypoints_fail(self):
@@ -152,9 +179,11 @@ class RegistryTestCase(unittest.TestCase):
     def test_register_all_entrypoints_success(self):
         self.emulate_register_entrypoint(
             'repodono.nunja.testing.mold = repodono.nunja.testing:mold')
-        path1 = self.registry.lookup_path('repodono.nunja.testing.mold/basic')
+        path1 = self.registry.mold_id_to_path(
+            'repodono.nunja.testing.mold/basic')
         self.registry.init_entrypoints()
-        path2 = self.registry.lookup_path('repodono.nunja.testing.mold/basic')
+        path2 = self.registry.mold_id_to_path(
+            'repodono.nunja.testing.mold/basic')
         self.assertEqual(path1, path2)
         path3 = self.registry.molds['repodono.nunja.testing.mold/basic']
         self.assertEqual(path1, path3)
@@ -166,9 +195,9 @@ class RegistryTestCase(unittest.TestCase):
     def test_register_all_entrypoints_success_alt_name(self):
         self.emulate_register_entrypoint(
             'repodono.nunja.testmold = repodono.nunja.testing:mold')
-        path1 = self.registry.lookup_path('repodono.nunja.testmold/basic')
+        path1 = self.registry.mold_id_to_path('repodono.nunja.testmold/basic')
         self.registry.init_entrypoints()
-        path2 = self.registry.lookup_path('repodono.nunja.testmold/basic')
+        path2 = self.registry.mold_id_to_path('repodono.nunja.testmold/basic')
         self.assertEqual(path1, path2)
         path3 = self.registry.molds['repodono.nunja.testmold/basic']
         self.assertEqual(path1, path3)
@@ -183,7 +212,7 @@ class RegistryTestCase(unittest.TestCase):
             'repodono.nunja.testmold = repodono.nunja.testing:mold')
         self.registry.init_entrypoints()
         result = json.loads(self.registry.export_local_requirejs())
-        p = self.registry.lookup_path('repodono.nunja.testmold/basic')
+        p = self.registry.mold_id_to_path('repodono.nunja.testmold/basic')
         self.assertEqual(result['paths']['repodono.nunja.testmold/basic'], p)
 
     # Test cases for ensuring no failures done by register_module

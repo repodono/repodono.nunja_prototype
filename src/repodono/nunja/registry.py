@@ -83,7 +83,7 @@ class Registry(object):
         # need this wrapper.
         self.molds.update(DEFAULT_MOLDS)
 
-    def lookup_path(self, mold_id, default=_marker):
+    def mold_id_to_path(self, mold_id, default=_marker):
         """
         Lookup the path of a mold identifier.
         """
@@ -125,6 +125,12 @@ class Registry(object):
 
         return handle_default(
             'mold_id %s does not lead to a valid template.jinja')
+
+    def lookup_path(self, mold_id_path, default=_marker):
+        # Should point to a valid location inside the mold.
+        fragments = mold_id_path.split('/', 2)
+        # subpath = path_fragments[2]
+        return self.mold_id_to_path(mold_id_path, default)
 
     def verify_path(self, path):
         if not exists(join(path, REQ_TMPL_NAME)):
