@@ -33,7 +33,9 @@ default the names must obey the existing limitations as per the main
 class.  If child classes override any of these the behaviors of the
 different combinations of instances of the classes that make use of that
 registry will have effectively undefined behavior.  Extend this with
-caution.
+caution, as the rules in place here are to accommodate usage within the
+jinja loader and to facilitate the generation of requirejs configuration
+in typical JavaScript environments.
 
 For general usage, a default registry that include the entry points is
 instantiated, however users are able to create their own registry class
@@ -73,8 +75,24 @@ _marker = object()
 
 
 class Registry(object):
+    """
+    Default registry implementation.
+    """
 
     def __init__(self, registry_name, entry_points=None, default_prefix='_'):
+        """
+        Arguments:
+
+        registry_name
+            The name of this registry.
+        entry_points
+            Dictionary of entry_point name to its entry_point that has
+            the same name.
+        default_prefix
+            The default prefix to use for registration if no mold_id was
+            provided.
+        """
+
         self.entry_points = {} if entry_points is None else entry_points
         self.registry_name = registry_name
         self.default_prefix = default_prefix
@@ -131,6 +149,10 @@ class Registry(object):
             'mold_id %s does not lead to a valid template.jinja')
 
     def lookup_path(self, mold_id_path, default=_marker):
+        """
+        Lookup the filesystem path from a mold_id compatible path.
+        """
+
         fragments = mold_id_path.split('/')
         mold_id = '/'.join(fragments[:2])
         subpath = fragments[2:]
@@ -145,6 +167,11 @@ class Registry(object):
         # TODO Should a lookup_template be implemented?
 
     def verify_path(self, path):
+        """
+        Verify that this base path (resolved from a mold_id) will lead
+        to a working template file.
+        """
+
         if not exists(join(path, REQ_TMPL_NAME)):
             raise TemplateNotFoundError(
                 'required template not found at `%s`' % path)
@@ -161,7 +188,10 @@ class Registry(object):
         try:
             mold_prefix, mold_basename = mold_id.split('/')
         except ValueError:
-            raise KeyError('mold_id not following standard format.')
+            raise KeyError(
+                'mold_id not following standard format of some prefix, '
+                'followed by a `/`, and then the basename of provided path.'
+            )
 
         if mold_basename != basename(path):
             raise KeyError(
