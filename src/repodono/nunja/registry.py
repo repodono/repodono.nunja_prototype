@@ -106,7 +106,12 @@ class Registry(object):
             return handle_default(
                 'mold_id %s not found and not in standard format')
 
-        ep = self.entry_points[prefix]
+        try:
+            ep = self.entry_points[prefix]
+        except KeyError:
+            return handle_default(
+                'mold_id %s not found in self.entry_points.')
+
         try:
             module = __import__(ep.module_name, fromlist=['__name__'], level=0)
         except ImportError:
@@ -129,7 +134,13 @@ class Registry(object):
         fragments = mold_id_path.split('/')
         mold_id = '/'.join(fragments[:2])
         subpath = fragments[2:]
-        path = self.mold_id_to_path(mold_id, default)
+        try:
+            path = self.mold_id_to_path(mold_id)
+        except KeyError:
+            if default is _marker:
+                raise
+            return default
+
         return join(path, *subpath)
         # TODO Should a lookup_template be implemented?
 

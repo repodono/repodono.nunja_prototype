@@ -116,8 +116,16 @@ class RegistryTestCase(unittest.TestCase):
         with self.assertRaises(KeyError):
             self.registry.mold_id_to_path('repodono.nunja.testing.mold')
 
+        self.assertEqual(
+            self.registry.mold_id_to_path(
+                'repodono.nunja.testing.mold', ''), '')
+
         with self.assertRaises(KeyError):
             self.registry.mold_id_to_path('repodono.nunja.testing.mold/basic')
+
+        self.assertEqual(
+            self.registry.mold_id_to_path(
+                'repodono.nunja.testing.mold/basic', ''), '')
 
     def test_bad_mold_id_to_path_with_entrypoint(self):
         self.emulate_register_entrypoint(
@@ -136,7 +144,7 @@ class RegistryTestCase(unittest.TestCase):
 
         self.assertEqual(
             self.registry.mold_id_to_path(
-                'repodono.nunja.testing.mold', ''), '')
+                'repodono.nunja.testing.mold/missing', ''), '')
 
     def test_bad_mold_id_to_path_with_entrypoint_missing_template(self):
         self.emulate_register_entrypoint(
@@ -192,7 +200,7 @@ class RegistryTestCase(unittest.TestCase):
             contents = fd.read()
         self.assertEqual(contents, basic_tmpl_str)
 
-    def test_register_all_entrypoints_mold_id_to_path_inside(self):
+    def test_register_all_entrypoints_lookup_path(self):
         self.emulate_register_entrypoint(
             'rntm = repodono.nunja.testing:mold')
 
@@ -226,6 +234,28 @@ class RegistryTestCase(unittest.TestCase):
         with open(join(path2, 'template.jinja'), 'r') as fd:
             contents = fd.read()
         self.assertEqual(contents, basic_tmpl_str)
+
+    def test_lookup_path_default_missing_registration(self):
+        default = '/some/path'
+        self.assertEqual(
+            self.registry.lookup_path(
+                '__/itemlist/template.jinja', default=default),
+            default,
+        )
+
+    def test_lookup_path_default_invalid_path(self):
+        self.emulate_register_entrypoint(
+            'rntm = repodono.nunja.testing:mold')
+
+        with self.assertRaises(KeyError):
+            self.registry.lookup_path('__/itemlist/template.jinja')
+
+        default = '/some/path'
+        self.assertEqual(
+            self.registry.lookup_path(
+                '__/itemlist/template.jinja', default=default),
+            default,
+        )
 
     def test_export_local_requirejs(self):
         # TODO contents are currently absolute paths, hope it's okay.
