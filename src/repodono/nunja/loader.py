@@ -1,4 +1,6 @@
 # -*- coding: utf-8 -*-
+import codecs
+
 from os.path import getmtime
 from os.path import exists
 
@@ -31,7 +33,6 @@ class NunjaLoader(BaseLoader):
             raise TemplateNotFound(template)
 
         mtime = getmtime(path)
-        with file(path) as f:
-            source = f.read().decode('utf-8')
+        with codecs.open(path, encoding='utf-8') as f:
+            source = f.read()
         return source, path, uptodate_checker(path)
-
