@@ -221,6 +221,18 @@ class RegistryTestCase(unittest.TestCase):
             contents = fd.readline()
         self.assertEqual(contents, '<ul id="{{ list_id }}">\n')
 
+    def test_lookup_block_parent_traversal(self):
+        self.emulate_register_entrypoint(
+            'rntm = repodono.nunja.testing:mold')
+
+        # Parent traversal blocked.
+        with self.assertRaises(KeyError):
+            self.registry.lookup_path('rntm/itemlist/../../../registry.py')
+
+        # single dots will be omitted.
+        path1 = self.registry.lookup_path('rntm/itemlist/./template.jinja')
+        self.assertTrue(path1.endswith('testing/mold/itemlist/template.jinja'))
+
     def test_register_all_entrypoints_success_alt_name(self):
         self.emulate_register_entrypoint(
             'repodono.nunja.testmold = repodono.nunja.testing:mold')

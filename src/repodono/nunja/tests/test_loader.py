@@ -29,12 +29,17 @@ class LoaderTestCase(unittest.TestCase):
         mkdir(self.molddir)
         self.main_template = join(self.molddir, 'template.jinja')
         self.sub_template = join(self.molddir, 'sub.jinja')
+        self.bad_template = join(self.tempdir, 'bad.jinja')
 
         with open(self.main_template, 'w') as fd:
             fd.write('<div>{% include "tmp/mold/sub.jinja" %}</div>')
 
         with open(self.sub_template, 'w') as fd:
             fd.write('<span>{{ data }}</span>')
+
+        # for path traversal attack tests.
+        with open(self.bad_template, 'w') as fd:
+            fd.write('<bad>{{ data }}</bad>')
 
         # force the mtime to some time way in the past
         utime(self.sub_template, (-1, 1))
@@ -97,3 +102,10 @@ class LoaderTestCase(unittest.TestCase):
         with self.assertRaises(TemplateNotFound):
             # as that was removed
             template.render(data='Hello World!')
+
+    def test_loader_traversal_safety(self):
+        self.registry.register_mold(self.molddir, 'tmp/mold')
+        loader = NunjaLoader(self.registry)
+
+        with self.assertRaises(TemplateNotFound):
+            loader.get_source(None, 'tmp/mold/../bad.jinja')

@@ -49,6 +49,11 @@ methods will not make use of them.
 
 import json
 from os import listdir
+
+from os.path import altsep
+from os.path import sep
+from os.path import pardir
+
 from os.path import basename
 from os.path import dirname
 from os.path import exists
@@ -155,8 +160,14 @@ class Registry(object):
 
         fragments = mold_id_path.split('/')
         mold_id = '/'.join(fragments[:2])
-        subpath = fragments[2:]
         try:
+            subpath = []
+            for piece in fragments[2:]:
+                if (sep in piece or (altsep and altsep in piece) or
+                        piece == pardir):
+                    raise KeyError
+                elif piece and piece != '.':
+                    subpath.append(piece)
             path = self.mold_id_to_path(mold_id)
         except KeyError:
             if default is _marker:
