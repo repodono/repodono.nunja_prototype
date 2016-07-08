@@ -16,8 +16,8 @@ define([
         // This one does not poke to a server, but just reorders the
         // list locally here derived from pre-rendered data.
         core.engine.populate(this.element, {
-            list_id: this.id,
-            items: this.items,
+            'list_id': this.id,
+            'items': this.items,
         });
         this.hook();
     };

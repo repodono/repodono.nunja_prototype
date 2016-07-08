@@ -20,7 +20,7 @@ class Engine(object):
     def __init__(
             self,
             registry=default_registry,
-            jinja=None,
+            env=None,
             _wrapper_name=DEFAULT_WRAPPER_NAME,
             _required_template_name=REQ_TMPL_NAME,
             ):
@@ -34,7 +34,7 @@ class Engine(object):
         """
 
         self.registry = registry
-        self.jinja = jinja if jinja else Environment(
+        self.env = env if env else Environment(
             autoescape=True,
             loader=NunjaLoader(registry)
         )
@@ -44,11 +44,11 @@ class Engine(object):
 
     def load_template(self, name):
         """
-        Load/cache the template identified by the template name as found
-        in the registry
+        Load the template identified by the template name as found in
+        the registry.
         """
 
-        return self.jinja.get_template(name)
+        return self.env.get_template(name)
 
     def load_mold(self, mold_id):
         """
@@ -59,7 +59,7 @@ class Engine(object):
 
     def execute(self, mold_id, data, wrapper_tag='div'):
         """
-        Execute a mold `mold_id` by rendering through jinja
+        Execute a mold `mold_id` by rendering through ``env``.
 
         This is done using its default template, with data provided as
         dict.

@@ -116,3 +116,39 @@ class BaseTestCase(unittest.TestCase):
             '</dl>\n'
             '</div>'
         )
+
+    def test_named_include_multilist(self):
+        data = {
+            'list_id': 'root_id',
+            'itemlists': [
+                ['list_1', ['Item 1', 'Item 2']],
+                ['list_2', ['Item 3', 'Item 4']],
+                ['list_3', ['Item 5', 'Item 6']],
+            ],
+        }
+
+        result = self.engine.execute(
+            'repodono.nunja.testing.mold/include_by_name', data=data)
+
+        self.assertEqual(
+            result,
+            '<div data-nunja="repodono.nunja.testing.mold/include_by_name">\n'
+            '<dl id="root_id">\n\n'
+            '  <dt>list_1</dt>\n'
+            '  <dd><ul id="list_1">\n\n'
+            '  <li>Item 1</li>\n'
+            '  <li>Item 2</li>\n'
+            '</ul></dd>\n'
+            '  <dt>list_2</dt>\n'
+            '  <dd><ul id="list_2">\n\n'
+            '  <li>Item 3</li>\n'
+            '  <li>Item 4</li>\n'
+            '</ul></dd>\n'
+            '  <dt>list_3</dt>\n'
+            '  <dd><ul id="list_3">\n\n'
+            '  <li>Item 5</li>\n'
+            '  <li>Item 6</li>\n'
+            '</ul></dd>\n'
+            '</dl>\n'
+            '</div>'
+        )

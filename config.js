@@ -14,6 +14,8 @@
             'nunjucks': 'node_modules/nunjucks/browser/nunjucks',
             'repodono.nunja.core': 'src/repodono/nunja/js/core',
             'repodono.nunja.engine': 'src/repodono/nunja/js/engine',
+            'repodono.nunja.loader': 'src/repodono/nunja/js/loader',
+            'repodono.nunja.registry': 'src/repodono/nunja/js/registry',
         },
         shim: {
         },

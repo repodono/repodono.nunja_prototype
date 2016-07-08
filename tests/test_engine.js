@@ -9,6 +9,9 @@ define([
     // the include_by_value mold.
     'text!repodono.nunja.testing.mold/include_by_value/template.jinja',
     'repodono.nunja.testing.mold/include_by_value/index',
+    // the include_by_name mold.
+    'text!repodono.nunja.testing.mold/include_by_name/template.jinja',
+    'repodono.nunja.testing.mold/include_by_name/index',
 ], function(nunjucks, core) {
     'use strict';
 
@@ -50,24 +53,6 @@ define([
                 '<div data-nunja="repodono.nunja.testing.mold/basic">\n' +
                 '<span>Hello User</span>\n\n</div>\n'
             )
-        });
-
-        it('Core engine reload async wrapper', function() {
-            var callback = function (compiled) {
-                c = compiled;
-            }
-
-            // testing double to be sure that all async calls are, well
-            // async.
-            for (var i in [1, 2]) {
-                var c = null;
-                this.engine.load_template_async(
-                    '_core_/_default_wrapper_', callback);
-                expect(c).to.equal(null);
-                this.clock.tick(500);
-                expect(c.render({'_template_': nunjucks.compile('hello')})
-                    ).to.equal('< >\nhello\n</>\n');
-            }
         });
 
     });
@@ -323,16 +308,51 @@ define([
             // parent can trigger the onload manually so that all the
             // init hooks will be automatically called on the re-
             // rendered results?
-
-            // What about an actual loader for both nunjucks/jinja2 so
-            // that the templates can be continued to be shared?
-
         });
 
-        it('Rendering via include in for loop', function() {
+        it('Rendering via manual include in for loop', function() {
             this.rootEl.innerHTML = (
                 '<div data-nunja="repodono.nunja.testing.mold/' +
                                  'include_by_value"></div>'
+            );
+            this.engine.do_onload(document.body);
+            this.clock.tick(500);
+
+            this.rootEl.querySelector('div').model.itemlists = [
+                ['list_1', ['Item 1', 'Item 2']],
+                ['list_2', ['Item 3', 'Item 4']],
+                ['list_3', ['Item 5', 'Item 6']],
+            ];
+            this.rootEl.querySelector('div').model.render('root_list');
+
+            expect(this.rootEl.querySelector('div').innerHTML).to.equal(
+                '<dl id="root_list">\n\n' +
+                '  <dt>list_1</dt>\n' +
+                '  <dd><ul id="list_1">\n\n' +
+                '  <li>Item 1</li>\n' +
+                '  <li>Item 2</li>\n' +
+                '</ul>\n' +
+                '</dd>\n' +
+                '  <dt>list_2</dt>\n' +
+                '  <dd><ul id="list_2">\n\n' +
+                '  <li>Item 3</li>\n' +
+                '  <li>Item 4</li>\n' +
+                '</ul>\n' +
+                '</dd>\n' +
+                '  <dt>list_3</dt>\n' +
+                '  <dd><ul id="list_3">\n\n' +
+                '  <li>Item 5</li>\n' +
+                '  <li>Item 6</li>\n' +
+                '</ul>\n' +
+                '</dd>\n' +
+                '</dl>\n'
+            );
+        });
+
+        it('Rendering via named include in for loop', function() {
+            this.rootEl.innerHTML = (
+                '<div data-nunja="repodono.nunja.testing.mold/' +
+                                 'include_by_name"></div>'
             );
             this.engine.do_onload(document.body);
             this.clock.tick(500);

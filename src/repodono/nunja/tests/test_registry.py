@@ -69,6 +69,7 @@ class RegistryTestCase(unittest.TestCase):
         items = [
             '_core_/_default_wrapper_',
             'repodono.nunja.testing.mold/basic',
+            'repodono.nunja.testing.mold/include_by_name',
             'repodono.nunja.testing.mold/include_by_value',
             'repodono.nunja.testing.mold/itemlist',
         ]
