@@ -64,11 +64,11 @@ class BaseTestCase(unittest.TestCase):
         }
 
         result = self.engine.execute(
-            'repodono.nunja.testing.mold/import_with_data', data=data)
+            'repodono.nunja.testing.mold/include_by_value', data=data)
 
         self.assertEqual(
             result,
-            '<div data-nunja="repodono.nunja.testing.mold/import_with_data">\n'
+            '<div data-nunja="repodono.nunja.testing.mold/include_by_value">\n'
             '<dl id="">\n\n'
             '  <dt>list_1</dt>\n'
             '  <dd><ul id="list_1">\n\n'
@@ -92,11 +92,11 @@ class BaseTestCase(unittest.TestCase):
         }
 
         result = self.engine.execute(
-            'repodono.nunja.testing.mold/import_with_data', data=data)
+            'repodono.nunja.testing.mold/include_by_value', data=data)
 
         self.assertEqual(
             result,
-            '<div data-nunja="repodono.nunja.testing.mold/import_with_data">\n'
+            '<div data-nunja="repodono.nunja.testing.mold/include_by_value">\n'
             '<dl id="root_id">\n\n'
             '  <dt>list_1</dt>\n'
             '  <dd><ul id="list_1">\n\n'

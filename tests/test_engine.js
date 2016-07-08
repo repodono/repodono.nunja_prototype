@@ -6,9 +6,9 @@ define([
     'text!repodono.nunja.testing.mold/itemlist/template.jinja',
     // also the itemlist entry point
     'repodono.nunja.testing.mold/itemlist/index',
-    // the import_with_data mold.
-    'text!repodono.nunja.testing.mold/import_with_data/template.jinja',
-    'repodono.nunja.testing.mold/import_with_data/index',
+    // the include_by_value mold.
+    'text!repodono.nunja.testing.mold/include_by_value/template.jinja',
+    'repodono.nunja.testing.mold/include_by_value/index',
 ], function(nunjucks, core) {
     'use strict';
 
@@ -288,7 +288,7 @@ define([
         it('Mold index entry point triggered', function() {
             this.rootEl.innerHTML = (
                 '<div data-nunja="repodono.nunja.testing.mold/' +
-                                 'import_with_data"></div>'
+                                 'include_by_value"></div>'
             );
             this.engine.do_onload(document.body);
             this.clock.tick(500);
@@ -332,7 +332,7 @@ define([
         it('Rendering via include in for loop', function() {
             this.rootEl.innerHTML = (
                 '<div data-nunja="repodono.nunja.testing.mold/' +
-                                 'import_with_data"></div>'
+                                 'include_by_value"></div>'
             );
             this.engine.do_onload(document.body);
             this.clock.tick(500);
