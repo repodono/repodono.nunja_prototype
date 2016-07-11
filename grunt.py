@@ -33,7 +33,7 @@ def main():
     registry.init_entrypoints()
 
     with open('nunja.generated.js', 'w') as fd:
-        fd.write(require_js_tmpl % registry.export_local_requirejs())
+        fd.write(require_js_tmpl % registry.export_nunja_requirejs_json())
 
     os.environ['NODE_PATH'] = NODE_PATH
     call([GRUNT, '--gruntfile=Gruntfile.js'] + sys.argv[1:])

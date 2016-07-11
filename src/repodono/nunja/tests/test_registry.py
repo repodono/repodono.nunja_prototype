@@ -270,12 +270,12 @@ class RegistryTestCase(unittest.TestCase):
             default,
         )
 
-    def test_export_local_requirejs(self):
+    def test_export_nunja_requirejs_json(self):
         # TODO contents are currently absolute paths, hope it's okay.
         self.emulate_register_entrypoint(
             'repodono.nunja.testmold = repodono.nunja.testing:mold')
         self.registry.init_entrypoints()
-        result = json.loads(self.registry.export_local_requirejs())
+        result = json.loads(self.registry.export_nunja_requirejs_json())
         p = self.registry.mold_id_to_path('repodono.nunja.testmold/basic')
         self.assertEqual(result['paths']['repodono.nunja.testmold/basic'], p)
 

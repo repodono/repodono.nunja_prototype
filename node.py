@@ -29,7 +29,12 @@ def main():
     call([NPM, 'link', '--prefix=.'])
     call([NPM, 'install'])
 
-    # kill all possible node_modules symlinks that point back to here.
+    # Kill all possible node_modules symlinks that point back to here
+    # as we can't import using `require('repodono.nunja')` anyway as
+    # node/npm is not very well defined as to when that can be done.
+    # All I know is that it cannot be done from here even after doing
+    # the installation as outlined here.  Yay for raw filesystem based
+    # imports.
     _check_clean_recursive_symlink(join('.', 'lib', 'node_modules'))
     _check_clean_recursive_symlink(join('.', 'lib32', 'node_modules'))
     _check_clean_recursive_symlink(join('.', 'lib64', 'node_modules'))

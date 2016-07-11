@@ -317,9 +317,10 @@ class Registry(object):
             subdir = ep.attrs[0]
             self.register_module(module, subdir, ep.name)
 
-    def export_local_requirejs(self):
+    def export_nunja_requirejs_json(self):
         """
-        Export the registered molds as local requirejs configuration
+        Export the registered molds for requirejs configuration function
+        as a json encoded string.
         """
 
         return json.dumps({
