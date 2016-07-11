@@ -324,11 +324,6 @@ class Registry(object):
         """
 
         return json.dumps({
-            # karma base url
-            'baseUrl': '/base',
-            # These will be in absolute paths
-            # karma.js configuration will need to mark them as provided
-            # but not directly included.
             'paths': self.molds,
         })
 

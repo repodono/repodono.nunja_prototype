@@ -28,12 +28,13 @@ requirejs.config(%s
 def main():
     # Testing molds needed manual intervention.
     from repodono.nunja.registry import registry
+    from repodono.nunja.exporters import export_umd
     import repodono.nunja.testing
     registry.register_module(repodono.nunja.testing, subdir='mold')
     registry.init_entrypoints()
 
     with open('nunja.generated.js', 'w') as fd:
-        fd.write(require_js_tmpl % registry.export_nunja_requirejs_json())
+        fd.write(export_umd())
 
     os.environ['NODE_PATH'] = NODE_PATH
     call([GRUNT, '--gruntfile=Gruntfile.js'] + sys.argv[1:])
