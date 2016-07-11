@@ -17,6 +17,22 @@ umd_requirejs_tmpl = """\
 }());
 """
 
+umd_export_tmpl = """\
+(function() {
+    'use strict';
 
-def export_umd():
+    var exported = %s;
+
+    if (typeof exports !== 'undefined' && typeof module !== 'undefined') {
+        module.exports = exported;
+    }
+}());
+"""
+
+
+def export_umd_requirejs():
     return (umd_requirejs_tmpl % registry.export_nunja_requirejs_json())
+
+
+def export_umd_generic_json(json):
+    return (umd_requirejs_tmpl % json)
