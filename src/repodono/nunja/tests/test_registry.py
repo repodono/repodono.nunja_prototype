@@ -279,6 +279,25 @@ class RegistryTestCase(unittest.TestCase):
         p = self.registry.mold_id_to_path('repodono.nunja.testmold/basic')
         self.assertEqual(result['paths']['repodono.nunja.testmold/basic'], p)
 
+    def test_export_jinja_template_paths(self):
+        self.emulate_register_entrypoint(
+            'repodono.nunja.testmold = repodono.nunja.testing:mold')
+        self.registry.init_entrypoints()
+        result = json.loads(self.registry.export_jinja_template_paths())
+        test_names = [
+            u'repodono.nunja.testmold/basic',
+            u'_core_/_default_wrapper_',
+            u'repodono.nunja.testmold/itemlist',
+            u'repodono.nunja.testmold/include_by_value',
+        ]
+        for n in test_names:
+            self.assertEqual(result['template_map'][n], [u'template.jinja'])
+
+        self.assertEqual(
+            result['template_map'][u'repodono.nunja.testmold/include_by_name'],
+            [u'empty.jinja', u'template.jinja'],
+        )
+
     # Test cases for ensuring no failures done by register_module
 
     def test_registry_register_module_not_module(self):

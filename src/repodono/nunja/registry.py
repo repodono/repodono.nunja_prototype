@@ -49,6 +49,7 @@ methods will not make use of them.
 
 import json
 from os import listdir
+from os import walk
 
 from os.path import altsep
 from os.path import sep
@@ -59,12 +60,14 @@ from os.path import dirname
 from os.path import exists
 from os.path import isdir
 from os.path import join
+from os.path import relpath
 from logging import getLogger
 from types import ModuleType
 
 from .exc import TemplateNotFoundError
 
-REQ_TMPL_NAME = 'template.jinja'
+TMPL_FN_EXT = '.jinja'
+REQ_TMPL_NAME = 'template' + TMPL_FN_EXT
 ENTRY_POINT_NAME = 'repodono.nunja.mold'
 
 # I supposed this can all be hardcoded, but eating ones dogfood can be
@@ -113,7 +116,7 @@ class Registry(object):
 
         def handle_default(debug_msg=None):
             if debug_msg:
-                logger.debug('lookup_path:' + debug_msg, mold_id)
+                logger.debug('mold_id_to_path:' + debug_msg, mold_id)
             if default is _marker:
                 raise KeyError(
                     'Failed to lookup mold_id %s to a path' % mold_id)
@@ -325,6 +328,30 @@ class Registry(object):
 
         return json.dumps({
             'paths': self.molds,
+        })
+
+    def export_jinja_template_paths(self, match_func=None):
+        """
+        Export all filenames that end with `.jinja` that can be imported
+        from the nunja/nunjucks environment as json encoded string.
+        """
+
+        if match_func is None:
+            match_func = lambda p: p.endswith(TMPL_FN_EXT)
+
+        def generate_paths(path):
+            for r, d, files in walk(path):
+                for name in files:
+                    if match_func(name):
+                        yield relpath(join(r, name), path)
+
+        results = {
+            name: sorted(generate_paths(path))
+            for name, path in self.molds.items()
+        }
+
+        return json.dumps({
+            'template_map': results
         })
 
 
