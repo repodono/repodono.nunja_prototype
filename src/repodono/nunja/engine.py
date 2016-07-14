@@ -42,10 +42,17 @@ class Engine(object):
 
         self._core_template_ = self.load_mold(_wrapper_name)
 
+    def lookup_path(self, name):
+        """
+        Lookup the path of the underlying resource identified by name
+        through the loader.
+        """
+
+        return self.registry.verify_path(name)
+
     def load_template(self, name):
         """
-        Load the template identified by the template name as found in
-        the registry.
+        Load the template identified by name as found in the registry.
         """
 
         return self.env.get_template(name)

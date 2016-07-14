@@ -13,6 +13,12 @@ class DefaultCoreEngineTestCase(unittest.TestCase):
     it works as expected.
     """
 
+    def test_load_resource(self):
+        result = engine.lookup_path(
+            'repodono.nunja.molds/table/template.jinja')
+        self.assertTrue(result.endswith(
+            join('repodono', 'nunja', 'molds', 'table', 'template.jinja')))
+
     def test_null_rendering(self):
         result = engine.execute('repodono.nunja.molds/table', data={
             'css': {},

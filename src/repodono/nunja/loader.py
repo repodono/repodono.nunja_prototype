@@ -7,6 +7,8 @@ from os.path import exists
 from jinja2.loaders import BaseLoader
 from jinja2.loaders import TemplateNotFound
 
+from .exc import FileNotFoundError
+
 
 def uptodate_checker(filename):
     mtime = getmtime(filename)
@@ -25,11 +27,8 @@ class NunjaLoader(BaseLoader):
 
     def get_source(self, environment, template):
         try:
-            path = self.registry.lookup_path(template)
-        except KeyError:
-            raise TemplateNotFound(template)
-
-        if not exists(path):
+            path = self.registry.verify_path(template)
+        except FileNotFoundError:
             raise TemplateNotFound(template)
 
         mtime = getmtime(path)

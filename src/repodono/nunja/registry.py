@@ -64,6 +64,7 @@ from os.path import relpath
 from logging import getLogger
 from types import ModuleType
 
+from .exc import FileNotFoundError
 from .exc import TemplateNotFoundError
 
 TMPL_FN_EXT = '.jinja'
@@ -147,7 +148,7 @@ class Registry(object):
         for path in module.__path__:
             full_path = join(path, ep.attrs[0], mold_basename)
             try:
-                self.verify_path(full_path)
+                self.verify_mold_path(full_path)
             except TemplateNotFoundError:
                 continue
             else:
@@ -180,7 +181,20 @@ class Registry(object):
         return join(path, *subpath)
         # TODO Should a lookup_template be implemented?
 
-    def verify_path(self, path):
+    def verify_path(self, mold_id_path):
+        """
+        Lookup and verify path.
+        """
+
+        try:
+            path = self.lookup_path(mold_id_path)
+            if not exists(path):
+                raise KeyError
+        except KeyError:
+            raise FileNotFoundError(mold_id_path)
+        return path
+
+    def verify_mold_path(self, path):
         """
         Verify that this base path (resolved from a mold_id) will lead
         to a working template file.
@@ -191,7 +205,7 @@ class Registry(object):
                 'required template not found at `%s`' % path)
         return True
 
-    def verify_path_with_mold_id(self, path, mold_id):
+    def verify_mold_path_with_mold_id(self, path, mold_id):
         """
         Default verification/sanity checks to ensure the names are added
         with the consistency that we need for the system to work, which
@@ -229,8 +243,8 @@ class Registry(object):
                 'duplicate mold_id `%s` cannot be registered as mold' %
                 mold_id)
 
-        self.verify_path(path)
-        self.verify_path_with_mold_id(path, mold_id)
+        self.verify_mold_path(path)
+        self.verify_mold_path_with_mold_id(path, mold_id)
         self.molds[mold_id] = path
 
     def register_module(self, module, subdir=None, prefix=None, paths=None):
