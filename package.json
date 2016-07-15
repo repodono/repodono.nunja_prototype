@@ -1,5 +1,5 @@
 {
-    "name": "repodono-nunja",
+    "name": "repodono.nunja",
     "version": "0.0.1",
     "description": "Nunjucks x Jinja2",
     "author": "Tommy Yu <tommy.yu@auckland.ac.nz>",
@@ -12,7 +12,7 @@
     "scripts": {
         "test": "grunt test --gruntfile Gruntfile.js"
     },
-    "main": "src/repodono/nunja/js/repodono-nunja.js",
+    "main": "repodono.nunja.js",
     "repository": {
         "type": "git",
         "url": "https://github.com/repodono/repodono.nunja"

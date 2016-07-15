@@ -2,7 +2,6 @@ module.exports = function(grunt) {
     'use strict';
 
     var fs = require('fs');
-    var nunjaRequireJSOptions = require('./config');
 
     grunt.initConfig({
         karma: {

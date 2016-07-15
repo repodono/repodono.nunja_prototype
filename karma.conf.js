@@ -19,11 +19,12 @@ module.exports = function(config) {
             'node_modules/karma-mocha/lib/adapter.js',
             'node_modules/karma-requirejs/lib/adapter.js',
 
+            // The compiled JavaScript library for repodono.nunja
+            'repodono.nunja.js',
+
             /*
             * include requirejs configuration
             */
-            'src/repodono/nunja/js/config.js',
-            'config.js',
             'tests/config.js',
             'nunja.generated.js',
 
