@@ -8,12 +8,22 @@ from setuptools import setup
 long_description = (
     open('README.rst').read()
     + '\n' +
-    'Contributors\n'
-    '============\n'
-    + '\n' +
     open('CHANGES.rst').read()
     + '\n')
 
+package_json = {
+    "dependencies": {
+        "nunjucks": ">2.4.0",
+        "requirejs-text": "~2.0.12",
+    },
+}
+
+extras_calmjs = {
+    'node_modules': {
+        'nunjucks': 'nunjucks/browser/nunjucks.js',
+        'text': 'requirejs-text/text.js',
+    },
+}
 
 setup(
     name='repodono.nunja',
@@ -34,19 +44,34 @@ setup(
     url='http://pypi.python.org/pypi/repodono.nunja',
     license='GPL version 2',
     packages=find_packages('src', exclude=['ez_setup']),
+    package_json=package_json,
+    extras_calmjs=extras_calmjs,
     namespace_packages=['repodono'],
     package_dir={'': 'src'},
     include_package_data=True,
-    zip_safe=False,
+    zip_safe=True,
     install_requires=[
         'setuptools>=11.3',
         'Jinja2>=2.4',
+        'calmjs',
+        # 'calmjs.dev',  # later.
+        'calmjs.rjs',
     ],
     extras_require={},
     entry_points="""
-    [repodono.nunja.mold]
-    repodono.nunja.molds = repodono.nunja:molds
-    _core_ = repodono.nunja:_core_
+    [calmjs.module]
+    repodono.nunja = repodono.nunja
+
+    [calmjs.tests]
+    repodono.nunja = repodono.nunja.tests
+
+    # [calmjs.registry]
+    # repodono.nunja.mold = repodono.nunja.registry:Registry
+
+    # [repodono.nunja.mold]
+    # repodono.nunja.molds = repodono.nunja:molds
+    # TODO point out how this line gets munged into rjs.
+    # _core_ = repodono.nunja:_core_
     """,
     test_suite="repodono.nunja.tests.test_suite",
 )

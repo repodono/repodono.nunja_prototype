@@ -1,8 +1,8 @@
 'use strict';
 
 var nunjucks = require('nunjucks');
-var registry = require('repodono.nunja.registry');
-var loader = require('repodono.nunja.loader');
+var registry = require('repodono/nunja/registry');
+var loader = require('repodono/nunja/loader');
 
 var _registry = new registry.Registry();
 
